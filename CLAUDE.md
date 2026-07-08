@@ -489,7 +489,29 @@ src/screens/users/userDetails/
 
 Cada arquivo exporta apenas o seu componente público. Helpers privados (constantes, sub-componentes de uma única seção, type guards locais) ficam **dentro do arquivo onde são usados**. Utilitários compartilhados entre lista e detalhe vivem ao lado da feature (`src/screens/<feature>/<util>.ts`).
 
-**Não embrulhe a tela inteira num wrapper de spacing/padding.** Use um componente de layout de tela que já aplique safe area, padding e `gap` padrão ao container que recebe os filhos — assim os filhos diretos da tela já ficam espaçados automaticamente. Adicionar uma `View` com `gap`/`padding` na raiz da tela é redundante e descalibra o ritmo visual entre telas. Só introduza um wrapper na raiz quando precisar de comportamento de layout real que o layout padrão não cobre (ex.: ocupar 100% da altura com `flex: 1`).
+**Não embrulhe a tela inteira num wrapper de spacing/padding.** Toda tela usa o componente **`Screen`** (`@/components/screen`) como raiz — ele já aplica safe area, padding horizontal, `gap` padrão entre os filhos, scroll e a folga inferior que limpa a tab bar flutuante do grupo `(app)`. Adicionar uma `View` com `gap`/`padding` na raiz da tela é redundante e descalibra o ritmo visual entre telas. Só introduza um wrapper próprio quando precisar de comportamento de layout real que o `Screen` não cobre.
+
+**Props do `Screen`:**
+
+- `title` / `description` — quando `title` é passado, o `Screen` renderiza o cabeçalho (título `h1` + descrição `p2` muted). Sem `title`, a tela é só o corpo.
+- `headerActions` — nós à direita do título (ex.: botão de ação).
+- `showBackButton` (default `false`) + `onBack` — mostra a seta de voltar na linha do título; `onBack` default é `router.back()`.
+- `scrollable` (default `true`) — `ScrollView` com `keyboardShouldPersistTaps="handled"`. Passe `false` quando a tela tem o próprio scroller (ex.: `FlashList` ocupando `flex: 1`); nesse caso o scroller interno cuida da sua folga inferior.
+- `edges` (default `["top", "left", "right"]`) e `showsVerticalScrollIndicator` (default `false`).
+
+```tsx
+// tela simples com cabeçalho
+<Screen title="Perfil" description="Gerencie sua conta.">
+  <ProfileForm />
+</Screen>
+
+// tela de detalhe com voltar e ação no header
+<Screen title="Usuário" showBackButton headerActions={<EditButton />}>
+  <UserDetails />
+</Screen>
+```
+
+O arquivo de rota continua fino (delega para `src/screens/<feature>/`); é o componente da tela que renderiza o `Screen`.
 
 ### HTTP
 
@@ -654,39 +676,100 @@ export function Field(props: FieldProps<...>) {
 
 **Confirmação dupla para ações críticas** (bloquear usuário, apagar dado sensível, reverter cobrança): após a primeira confirmação, exija digitar uma palavra de confirmação (`BLOQUEAR`, `APAGAR`) num campo que só habilita o botão final quando o texto bate. Use só em ações irreversíveis/alto impacto.
 
+### Tipografia
+
+Todo texto do app passa pelo componente **`Text`** (`@/components/text`) — nunca use o `Text` cru do `react-native` numa tela e **nunca** aplique `fontSize`/`fontWeight`/`lineHeight` soltos num estilo. A escala é inspirada na tipografia da web (adaptada do shadcn/ui) e segue a convenção **`h1`, `h2`, `h3`** (títulos) e **`p1`, `p2`, `p3`** (corpo, do maior ao menor).
+
+A escala vive em **um único lugar**, os tokens `theme.typography.*` em `unistyles.ts` (fonte de verdade de tamanho, peso e `letterSpacing`). O componente só mapeia esses tokens para as **variants** do Unistyles — para recalibrar a tipografia do app inteiro, mude o token, não o componente nem a tela.
+
+| Variant | Uso                                        | Base (shadcn)                     |
+| ------- | ------------------------------------------ | --------------------------------- |
+| `h1`    | Título principal da tela (um por tela)     | `text-4xl` extrabold, tracking-tight |
+| `h2`    | Título de seção                            | `text-3xl` semibold, tracking-tight  |
+| `h3`    | Subtítulo / título de card                 | `text-2xl` semibold, tracking-tight  |
+| `p1`    | Corpo em destaque / texto de abertura      | `text-lg`                         |
+| `p2`    | Corpo padrão (**default**)                  | `text-base`, leading confortável  |
+| `p3`    | Texto de apoio, legenda, metadado          | `text-sm`                         |
+
+**Props:**
+
+- `variant` — uma das seis acima. **Default `p2`.**
+- `color` — `"default"` (`textForeground`), `"muted"` (`textMuted`) ou `"brand"`. Default `"default"`. Não crave cor de texto em estilo de tela; use esta prop.
+- `weight` — `"regular" | "medium" | "semibold" | "bold"`. **Opcional.** Quando omitido, mantém o peso natural da `variant` (títulos já vêm em bold/semibold). Passe só para ajustar o peso do corpo — ênfase inline, rótulo de formulário, título de item de lista. É o substituto de `fontWeight` solto (que é proibido).
+- `align` — `"auto" | "left" | "center" | "right"`. Default `"auto"`.
+- Aceita todas as props de `Text` do RN (`numberOfLines`, `onPress`, `accessibilityLabel`, etc.) e `style` para ajustes pontuais de layout (margem/flex) — **não** para redefinir a escala.
+
+Variants `h*` já recebem `accessibilityRole="header"` automaticamente (o leitor de tela anuncia como cabeçalho). Não precisa passar à mão.
+
+```tsx
+import { Text } from "@/components/text";
+
+<Text variant="h1">Início</Text>
+<Text variant="h3">Resumo do dia</Text>
+<Text>Parágrafo padrão — variant p2 é o default.</Text>
+<Text variant="p3" color="muted">
+  Atualizado há 2 minutos
+</Text>
+<Text variant="p3" weight="medium">E-mail</Text>
+```
+
+**Regras:**
+
+- ❌ `import { Text } from "react-native"` numa tela → ✓ `import { Text } from "@/components/text"`.
+- ❌ `<Text style={{ fontSize: 18, fontWeight: "600" }}>` → ✓ `<Text variant="h3">`.
+- ❌ `<Text style={{ fontWeight: "600" }}>` para negritar o corpo → ✓ `<Text weight="semibold">`.
+- ❌ `color: theme.colors.textMuted` no estilo → ✓ `<Text color="muted">`.
+- Faltou um nível na escala? Ajuste os tokens em `unistyles.ts` e mapeie no componente — não invente tamanho solto na tela.
+
 ### Cor da marca e tema
 
 A cor primária do sistema vive em **um único token** no tema do Unistyles (`unistyles.ts`), com versão para light e dark:
 
 ```ts
-const lightTheme = {
-  colors: {
-    brand: "#7D00B8", // marca
-    brandForeground: "#FFFFFF",
-    background: "#FFFFFF",
-    card: "#FFFFFF",
-    textForeground: "#11181C",
-    textMuted: "#6B7280",
-    primary: "#7D00B8", // alias da marca — não duplicar valor
+// tokens compartilhados entre os temas (gap + escala de tipografia)
+const sharedTokens = {
+  gap: (value: number) => value * 8,
+  typography: {
+    /* h1, h2, h3, p1, p2, p3 — ver a seção "Tipografia" */
   },
-  gap: (v: number) => v * 8,
 };
 
+const lightBrand = "#7D00B8";
+const lightTheme = {
+  colors: {
+    brand: lightBrand,
+    brandForeground: "#FFFFFF",
+    brandSubtle: "#EFE2FA", // fundo tênue tonado pela marca (ex.: item selecionado)
+    background: "#FFFFFF",
+    card: "#FFFFFF",
+    border: "#E5E7EB",
+    textForeground: "#11181C",
+    textMuted: "#6B7280",
+    primary: lightBrand, // alias da marca — referencia a const, não duplica o valor
+  },
+  ...sharedTokens,
+};
+
+const darkBrand = "#A855F7"; // mesma marca, tonada p/ dark
 const darkTheme = {
   colors: {
-    brand: "#A855F7", // mesma marca, tonada p/ dark
+    brand: darkBrand,
     brandForeground: "#FFFFFF",
+    brandSubtle: "#2B1D3A",
     background: "#11181C",
     card: "#1C2127", // mais claro que background → elevação
+    border: "#2A2F36",
     textForeground: "#ECEDEE",
     textMuted: "#9CA3AF",
-    primary: "#A855F7",
+    primary: darkBrand,
   },
-  gap: (v: number) => v * 8,
+  ...sharedTokens,
 };
 ```
 
 `primary` e demais usos da marca são **aliases** de `brand` — não duplicar o valor. Para trocar a marca num novo projeto, mude apenas `brand` (light + dark). Se houver gráficos, mantenha o ramp de cores harmonizado com o hue da marca.
+
+Além da marca, o tema traz `border` (traços/divisórias e contorno de card) e `brandSubtle` (fundo tênue tonado pela marca — ex.: estado selecionado). `gap` e `typography` são compartilhados entre os temas via `sharedTokens` — só as cores mudam entre light e dark.
 
 **Dark mode em superfícies "card-like"**: use `colors.card` (mais claro que `background` no dark, dando elevação) e remova sombra no dark (sombra não rende em fundo escuro).
 
