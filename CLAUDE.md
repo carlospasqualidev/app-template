@@ -257,10 +257,12 @@ Regras práticas:
 
 ## Testes
 
-- Jest (preset `jest-expo`) + React Native Testing Library, e Maestro para E2E.
+- Jest (preset `jest-expo`) + React Native Testing Library (RNTL), e Maestro para E2E.
+- **Comandos**: `npm test` (Jest), `npm run typecheck` (`tsc --noEmit`), `npm run lint`, `npm run format` (Prettier), `npm run check` (lint + typecheck + test — rode antes de empurrar). O `pre-commit` (Husky + lint-staged) roda ESLint+Prettier nos arquivos staged; o `pre-push` roda typecheck + test.
 - Testes unitários/integração vivem em `src/tests/`, organizados em pastas — uma por componente/módulo, com `<name>.test.ts(x)` dentro.
-- Setup global em `src/tests/setup.ts` (referenciado no `jest` config).
-- O componente/módulo é importado via alias `@/...`, nunca por caminho relativo.
+- Setup global em `src/tests/setup.ts` — importa o **mock do Unistyles** (`react-native-unistyles/mocks`) e a config de temas (`unistyles.ts`); sem isso os componentes não renderizam no Jest.
+- **`src/tests/` é excluído do `tsc --noEmit`** (o `setup.ts` importa o mock do Unistyles, cujo source arrasta tipos web e quebra a checagem). Os testes rodam via Jest/Babel — o gate de tipos cobre o app, o Jest cobre os testes.
+- O componente/módulo é importado via alias `@/...`, nunca por caminho relativo. Para testar o `useZodForm`, importe de `@/components/form/useZodForm` (não do barrel `@/components/form`, que arrasta ícones e outros módulos pesados pro ambiente de teste).
 
 ```
 src/tests/
