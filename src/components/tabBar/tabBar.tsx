@@ -1,4 +1,4 @@
-import { BlurView, type BlurTint } from "expo-blur";
+import { BlurView } from "expo-blur";
 import { type RefObject } from "react";
 import { View, type ViewProps } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -14,18 +14,24 @@ export function TabBarBase({
   ...props
 }: ITabBarBaseProps) {
   const { rt } = useUnistyles();
-  const tint: BlurTint = rt.colorScheme === "dark" ? "dark" : "light";
+  const isDark = rt.colorScheme === "dark";
 
   return (
-    <View accessibilityRole="tablist" {...props} style={[style, styles.container]}>
-      <BlurView
-        intensity={50}
-        tint={tint}
-        blurMethod="dimezisBlurView"
-        blurTarget={blurTarget}
-        style={styles.blur}
-      />
-      <View style={styles.row}>{children}</View>
+    <View
+      {...props}
+      style={[style, styles.positioner]}
+      pointerEvents="box-none"
+    >
+      <View accessibilityRole="tablist" style={styles.pill}>
+        <BlurView
+          intensity={100}
+          tint={isDark ? "dark" : "light"}
+          blurMethod="dimezisBlurViewSdk31Plus"
+          blurTarget={blurTarget}
+          style={styles.blur}
+        />
+        <View style={styles.row}>{children}</View>
+      </View>
     </View>
   );
 }
@@ -34,18 +40,29 @@ const styles = StyleSheet.create((theme, rt) => {
   const isDark = rt.colorScheme === "dark";
 
   return {
-    container: {
+    // Full-width apenas para posicionar; centraliza a pílula (compacta) no meio.
+    positioner: {
       position: "absolute",
-      left: theme.gap(2),
-      right: theme.gap(2),
+      left: 0,
+      right: 0,
       bottom: theme.gap(1) + rt.insets.bottom,
-      borderRadius: theme.gap(3),
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    pill: {
       overflow: "hidden",
+      borderRadius: theme.gap(3),
       borderWidth: 1,
-      borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+      borderColor: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.06)",
+      // Tint leve sobre o BlurView (que agora borra de verdade): baixa opacidade
+      // deixa o borrão do conteúdo aparecer sem ficar legível.
       backgroundColor: isDark
-        ? "rgba(17,24,28,0.25)"
-        : "rgba(255,255,255,0.25)",
+        ? "rgba(28,33,39,0.42)"
+        : "rgba(255,255,255,0.42)",
+      shadowColor: "#000",
+      shadowOpacity: isDark ? 0 : 0.12,
+      shadowRadius: 12,
+      shadowOffset: { width: 0, height: 4 },
       elevation: isDark ? 0 : 8,
     },
     blur: {
@@ -58,7 +75,7 @@ const styles = StyleSheet.create((theme, rt) => {
     row: {
       flexDirection: "row",
       paddingVertical: theme.gap(0.75),
-      paddingHorizontal: theme.gap(1),
+      paddingHorizontal: theme.gap(0.75),
     },
   };
 });

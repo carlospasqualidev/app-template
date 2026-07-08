@@ -39,6 +39,10 @@ const lightTheme = {
     textForeground: "#11181C",
     textMuted: "#6B7280",
     primary: lightBrand,
+    secondary: "#F1F3F5",
+    secondaryForeground: "#11181C",
+    destructive: "#DC2626",
+    destructiveForeground: "#FFFFFF",
   },
   ...sharedTokens,
 };
@@ -55,6 +59,10 @@ const darkTheme = {
     textForeground: "#ECEDEE",
     textMuted: "#9CA3AF",
     primary: darkBrand,
+    secondary: "#262B31",
+    secondaryForeground: "#ECEDEE",
+    destructive: "#EF4444",
+    destructiveForeground: "#FFFFFF",
   },
   ...sharedTokens,
 };

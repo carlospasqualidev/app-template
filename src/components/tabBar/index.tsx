@@ -19,6 +19,8 @@ interface ITabBarProps {
 }
 
 export function TabBar({ tabs }: ITabBarProps) {
+  // Alvo do blur: o conteúdo das telas. Sem ele, o método SDK31Plus cai para
+  // "none" e a tab bar não borra nada.
   const blurTarget = useRef<View>(null);
 
   return (

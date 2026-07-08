@@ -57,8 +57,8 @@ export const TabBarButton = forwardRef<View, ITabBarButtonProps>(
 
 const styles = StyleSheet.create((theme) => ({
   button: {
-    flex: 1,
     minHeight: 48,
+    paddingHorizontal: theme.gap(1.5),
     alignItems: "center",
     justifyContent: "center",
   },
