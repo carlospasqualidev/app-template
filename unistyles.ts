@@ -43,6 +43,10 @@ const lightTheme = {
     secondaryForeground: "#11181C",
     destructive: "#DC2626",
     destructiveForeground: "#FFFFFF",
+    success: "#16A34A",
+    successForeground: "#FFFFFF",
+    warning: "#D97706",
+    warningForeground: "#FFFFFF",
   },
   ...sharedTokens,
 };
@@ -63,6 +67,10 @@ const darkTheme = {
     secondaryForeground: "#ECEDEE",
     destructive: "#EF4444",
     destructiveForeground: "#FFFFFF",
+    success: "#22C55E",
+    successForeground: "#052E16",
+    warning: "#F59E0B",
+    warningForeground: "#3A2606",
   },
   ...sharedTokens,
 };

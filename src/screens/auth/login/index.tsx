@@ -29,7 +29,7 @@ export function LoginScreen() {
   });
 
   return (
-    <Screen title="Entrar" description="Acesse sua conta para continuar.">
+    <Screen title="Bem-vindo" description="Acesse sua conta para continuar.">
       <TextField
         control={form.control}
         name="email"

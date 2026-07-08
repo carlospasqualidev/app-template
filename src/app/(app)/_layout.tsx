@@ -1,5 +1,5 @@
 import { type ErrorBoundaryProps, Redirect } from "expo-router";
-import { Blocks, Compass, User } from "lucide-react-native";
+import { Blocks, Newspaper, User } from "lucide-react-native";
 
 import { ErrorFallback } from "@/components/errorFallback";
 import { TabBar, type ITab } from "@/components/tabBar";
@@ -7,7 +7,7 @@ import { useSessionStore } from "@/stores/sessionStore";
 
 const tabs: ITab[] = [
   { name: "index", href: "/", label: "Componentes", icon: Blocks },
-  { name: "explore", href: "/explore", label: "Buscar", icon: Compass },
+  { name: "explore", href: "/explore", label: "Feed", icon: Newspaper },
   { name: "profile", href: "/profile", label: "Perfil", icon: User },
 ];
 

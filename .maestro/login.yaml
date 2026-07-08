@@ -1,0 +1,28 @@
+appId: com.adalovelace.dev.apptemplate
+name: Login
+---
+# Modo fake de sessão: qualquer e-mail válido + senha não-vazia autentica.
+- launchApp:
+    clearState: true
+# Espera tolerante ao boot/validação de sessão antes de assertar a tela.
+- extendedWaitUntil:
+    visible: "voce@email.com"
+    timeout: 30000
+- tapOn: "voce@email.com"
+- inputText: "maria@exemplo.com"
+- tapOn: "Sua senha"
+- inputText: "senha12345"
+- hideKeyboard
+- tapOn: "Entrar"
+# Após autenticar, cai na aba inicial (showcase de componentes).
+- extendedWaitUntil:
+    visible: "Componentes"
+    timeout: 20000
+# Alguns aparelhos (ex.: Samsung Pass) abrem um prompt do sistema "salvar senha?"
+# que cobre a tab bar. Fecha, se aparecer.
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Cancelar"
+    commands:
+      - tapOn: "Cancelar"

@@ -1,0 +1,8 @@
+appId: com.adalovelace.dev.apptemplate
+name: Logout
+---
+- runFlow: login.yaml
+- tapOn: "Perfil"
+- tapOn: "Sair"
+# Sem sessão, o gate redireciona de volta para o login.
+- assertVisible: "Entrar"

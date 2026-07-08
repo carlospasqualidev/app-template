@@ -31,7 +31,7 @@ export function SignupScreen() {
 
   return (
     <Screen
-      title="Criar conta"
+      title="Nova conta"
       description="Preencha seus dados para começar."
       showBackButton
     >

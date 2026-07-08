@@ -1,0 +1,18 @@
+appId: com.adalovelace.dev.apptemplate
+name: Navegação entre abas
+---
+- runFlow: login.yaml
+# Alterna entre as abas e confere o conteúdo. Maestro faz match completo (regex),
+# então use `.*` para casar descrições parciais.
+- tapOn: "Feed"
+- extendedWaitUntil:
+    visible: "Lista com TanStack Query.*"
+    timeout: 15000
+- tapOn: "Perfil"
+- extendedWaitUntil:
+    visible: "Gerencie sua conta.*"
+    timeout: 15000
+- tapOn: "Componentes"
+- extendedWaitUntil:
+    visible: "Tipografia"
+    timeout: 15000

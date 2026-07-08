@@ -1,0 +1,34 @@
+appId: com.adalovelace.dev.apptemplate
+name: Excluir post (ConfirmDialog)
+---
+# Exercita o ConfirmDialog no Feed. Não assere remoção permanente: o backend fake
+# (jsonplaceholder) não deleta de fato e o refetch restaura o item — aqui validamos
+# o contrato do diálogo (abre no toque, cancela e confirma fechando).
+- runFlow: login.yaml
+- tapOn: "Feed"
+- extendedWaitUntil:
+    visible: "Lista com TanStack Query.*"
+    timeout: 15000
+# Abre o diálogo pelo primeiro botão de excluir (há um por card).
+- tapOn:
+    text: "Excluir post"
+    index: 0
+- extendedWaitUntil:
+    visible: "Cancelar"
+    timeout: 10000
+# Caminho cancelar: fecha sem excluir.
+- tapOn: "Cancelar"
+- extendedWaitUntil:
+    notVisible: "Cancelar"
+    timeout: 10000
+# Reabre e confirma: "Excluir" (match exato) mira só o botão, não o título "Excluir post".
+- tapOn:
+    text: "Excluir post"
+    index: 0
+- extendedWaitUntil:
+    visible: "Excluir"
+    timeout: 10000
+- tapOn: "Excluir"
+- extendedWaitUntil:
+    notVisible: "Cancelar"
+    timeout: 10000

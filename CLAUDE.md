@@ -247,7 +247,7 @@ Regras práticas:
 
 - **Code-splitting por rota é automático** no Expo Router (rotas são lazy por padrão em produção). Não tente reimplementar.
 - TanStack Query: configure `staleTime` em queries que não precisam refazer a cada navegação. Não use `useEffect` + `fetch`.
-- **Listas longas usam `@shopify/flash-list`**, nunca `FlatList`/`ScrollView` com `.map` para coleções grandes. Forneça `estimatedItemSize` e mantenha o `renderItem` estável (`useCallback`).
+- **Listas longas usam `@shopify/flash-list`**, nunca `FlatList`/`ScrollView` com `.map` para coleções grandes. Mantenha o `renderItem` estável (`useCallback`). (FlashList v2 dispensa `estimatedItemSize`.) Dentro de uma tela, use `Screen scrollable={false}` e deixe o `FlashList` (flex:1) ser o scroller. Ref.: [`src/screens/posts`](src/screens/posts).
 - **Não passe objeto/função inline** como prop para item de lista memoizado — recria a referência todo render e mata a memoização.
 - Memoize (`useMemo`/`useCallback`/`React.memo`) apenas com benefício mensurável — não por reflexo.
 - Animações em `react-native-reanimated` (roda na UI thread).
@@ -277,7 +277,7 @@ src/tests/
 - Teste o caminho de falha, não só o happy path.
 - Testes legíveis — eles documentam o comportamento esperado.
 - Componente reutilizável recebe teste cobrindo o contrato público (props obrigatórias, estados, handlers). Ao mudar a API dele, atualize o teste junto, não depois.
-- Fluxos de ponta a ponta (login, navegação principal, checkout) ficam em Maestro, não em teste de unidade.
+- Fluxos de ponta a ponta (login, navegação principal, checkout) ficam em **Maestro** (`.maestro/*.yaml`), não em teste de unidade. Rodam no app real (dev build + emulador/device) via `npm run test:e2e` (precisa do CLI do Maestro, instalado fora do npm — ver [`.maestro/README.md`](.maestro/README.md)). Os fluxos miram por **texto visível / label de acessibilidade** (placeholder de input, rótulo de aba, título de tela) — o mesmo caminho do leitor de tela; ao mudar textos da UI, atualize os specs. Fluxos prontos: `login`, `navigation`, `logout`.
 
 ### Como escrever testes (práticas)
 
@@ -596,7 +596,7 @@ Qualquer dado vindo do servidor entra via **TanStack Query** — sem exceção. 
 5. **Prefetch no `loader`/em foco.** Para tela rápida sem skeleton, prefetch o dado em paralelo ao chunk com `queryClient.prefetchQuery(...)`.
 6. **Mutations expõem estado, não inventam.** Use `isPending`/`error`/`isSuccess` — não crie `useState('loading')` paralelo.
 7. **Invalide na hora certa** (`onSuccess`/`onSettled`).
-8. **Refetch em foco no RN**: o `refetchOnWindowFocus` precisa do `focusManager` ligado ao `AppState` (e `onlineManager` ao `NetInfo`) para funcionar — configure uma vez no boot.
+8. **Refetch em foco no RN**: o `focusManager` (via `AppState`, em `@/hooks/useReactQueryFocus`, chamado no layout raiz) e o `onlineManager` (via `NetInfo`, em `@/lib/queryClient`) já estão ligados no boot. O default é `refetchOnWindowFocus: false`; habilite por query quando o dado vale revalidar ao voltar pro app. Tela de referência do padrão completo (query + `queryKeys` + `FlashList` + skeleton + estados): [`src/screens/posts`](src/screens/posts).
 9. **Deduplicação é automática.** Mesma `queryKey` ao mesmo tempo = uma requisição. Extraia hooks (`useUserDetail(id)`) e reuse à vontade.
 10. **`useInfiniteQuery` para "carregar mais"/scroll infinito** (combina com `FlashList` + `onEndReached`). Não recrie com `useState([...itens])`.
 
@@ -754,9 +754,11 @@ const [visible, setVisible] = useState(false);
 </Modal>;
 ```
 
-**Confirmações de ação** (delete, publicar, arquivar): use um dialog de confirmação que fique aberto enquanto o `onConfirm` resolve (botão com loading), feche em sucesso e permaneça aberto se a promise lançar (deixe o erro propagar pra camada de rede, que já mostra o toast).
+**Abstrações prontas para compor telas**: `Card` (`@/components/card`, superfície padrão), `Empty` (`@/components/empty`, estado vazio com ícone/título/descrição/ação), `Skeleton` (`@/components/skeleton`) e `ConfirmDialog` (`@/components/confirmDialog`). Reuse-as em vez de recriar `View` + estilo solto.
 
-**Confirmação dupla para ações críticas** (bloquear usuário, apagar dado sensível, reverter cobrança): após a primeira confirmação, exija digitar uma palavra de confirmação (`BLOQUEAR`, `APAGAR`) num campo que só habilita o botão final quando o texto bate. Use só em ações irreversíveis/alto impacto.
+**Confirmações de ação** (delete, publicar, arquivar): use o **`ConfirmDialog`** (`@/components/confirmDialog`) — ele fica aberto enquanto o `onConfirm` resolve (botão com loading), fecha em sucesso e permanece aberto se a promise lançar (o erro propaga pra camada de rede, que já mostra o toast). Ref. de uso (com `useMutation` + optimistic update): [`src/screens/posts`](src/screens/posts).
+
+**Confirmação dupla para ações críticas** (bloquear usuário, apagar dado sensível, reverter cobrança): passe `requireText="APAGAR"` ao `ConfirmDialog` — ele exige digitar a palavra num campo que só habilita o botão final quando o texto bate. Use só em ações irreversíveis/alto impacto.
 
 ### Tipografia
 

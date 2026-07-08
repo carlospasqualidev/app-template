@@ -1,6 +1,7 @@
 import { Screen } from "@/components/screen";
 
 import { ButtonSection } from "./buttonSection";
+import { DataDisplaySection } from "./dataDisplaySection";
 import { FormSection } from "./formSection";
 import { ModalSection } from "./modalSection";
 import { ToastSection } from "./toastSection";
@@ -14,6 +15,7 @@ export function ShowcaseScreen() {
     >
       <TypographySection />
       <ButtonSection />
+      <DataDisplaySection />
       <FormSection />
       <ToastSection />
       <ModalSection />
