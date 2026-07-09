@@ -31,7 +31,7 @@ const styles = StyleSheet.create((theme) => ({
   textarea: {
     minHeight: theme.gap(12),
     width: "100%",
-    borderRadius: theme.gap(1.25),
+    borderRadius: theme.radius.md,
     borderWidth: 1,
     borderColor: theme.colors.border,
     backgroundColor: theme.colors.card,
@@ -44,7 +44,7 @@ const styles = StyleSheet.create((theme) => ({
         true: { borderColor: theme.colors.destructive },
       },
       disabled: {
-        true: { opacity: 0.5 },
+        true: { opacity: theme.opacity.disabled },
       },
     },
   },

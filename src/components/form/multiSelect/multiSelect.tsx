@@ -136,7 +136,7 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: "center",
     justifyContent: "space-between",
     gap: theme.gap(1),
-    borderRadius: theme.gap(1.25),
+    borderRadius: theme.radius.md,
     borderWidth: 1,
     borderColor: theme.colors.border,
     backgroundColor: theme.colors.card,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create((theme) => ({
         true: { borderColor: theme.colors.destructive },
       },
       disabled: {
-        true: { opacity: 0.5 },
+        true: { opacity: theme.opacity.disabled },
       },
     },
   },
@@ -165,7 +165,7 @@ const styles = StyleSheet.create((theme) => ({
     minHeight: 44,
     paddingHorizontal: theme.gap(1.5),
     paddingVertical: theme.gap(1),
-    borderRadius: theme.gap(1.25),
+    borderRadius: theme.radius.md,
   },
   optionSelected: {
     backgroundColor: theme.colors.brandSubtle,

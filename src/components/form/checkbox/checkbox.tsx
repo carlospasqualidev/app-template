@@ -35,7 +35,7 @@ const styles = StyleSheet.create((theme) => ({
   root: {
     width: theme.gap(2.5),
     height: theme.gap(2.5),
-    borderRadius: theme.gap(0.75),
+    borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: theme.colors.border,
     alignItems: "center",
@@ -46,7 +46,7 @@ const styles = StyleSheet.create((theme) => ({
         true: { borderColor: theme.colors.brand },
       },
       disabled: {
-        true: { opacity: 0.5 },
+        true: { opacity: theme.opacity.disabled },
       },
     },
   },

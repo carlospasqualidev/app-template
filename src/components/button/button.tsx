@@ -96,7 +96,7 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     gap: theme.gap(1),
-    borderRadius: theme.gap(1.25),
+    borderRadius: theme.radius.md,
     variants: {
       variant: {
         default: { backgroundColor: theme.colors.brand },
@@ -117,7 +117,7 @@ const styles = StyleSheet.create((theme) => ({
         icon: { height: 44, width: 44 },
       },
       disabled: {
-        true: { opacity: 0.5 },
+        true: { opacity: theme.opacity.disabled },
       },
     },
   },

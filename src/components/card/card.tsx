@@ -19,7 +19,7 @@ const styles = StyleSheet.create((theme) => ({
   card: {
     gap: theme.gap(1),
     padding: theme.gap(2),
-    borderRadius: theme.gap(2),
+    borderRadius: theme.radius.xl,
     borderWidth: 1,
     borderColor: theme.colors.border,
     backgroundColor: theme.colors.card,

@@ -2,6 +2,20 @@ import { StyleSheet } from "react-native-unistyles";
 
 const sharedTokens = {
   gap: (value: number) => value * 8,
+  // Escala de raio inspirada no shadcn (--radius base = `lg` 10px). Fonte única de
+  // curvatura do app — componentes usam theme.radius.* em vez de valor solto.
+  radius: {
+    sm: 6, // checkbox, skeleton
+    md: 8, // botões, inputs, badge, controles
+    lg: 10, // base
+    xl: 14, // cards / superfícies
+    xxl: 20, // bottom sheet (Modal)
+    full: 9999, // círculos e pílulas (radio, avatar, dia do calendário)
+  },
+  // Opacidades de estado (fonte única) — ex.: controle desabilitado.
+  opacity: {
+    disabled: 0.5,
+  },
   typography: {
     h1: {
       fontSize: 36,
@@ -47,6 +61,11 @@ const lightTheme = {
     successForeground: "#FFFFFF",
     warning: "#D97706",
     warningForeground: "#FFFFFF",
+    // Efeitos: scrim do modal, tints do glass (tab bar) e cor da sombra.
+    overlay: "rgba(0,0,0,0.6)",
+    glassSurface: "rgba(255,255,255,0.42)",
+    glassBorder: "rgba(0,0,0,0.06)",
+    shadow: "#000000",
   },
   ...sharedTokens,
 };
@@ -71,6 +90,11 @@ const darkTheme = {
     successForeground: "#052E16",
     warning: "#F59E0B",
     warningForeground: "#3A2606",
+    // Efeitos: scrim do modal, tints do glass (tab bar) e cor da sombra.
+    overlay: "rgba(0,0,0,0.6)",
+    glassSurface: "rgba(28,33,39,0.42)",
+    glassBorder: "rgba(255,255,255,0.10)",
+    shadow: "#000000",
   },
   ...sharedTokens,
 };

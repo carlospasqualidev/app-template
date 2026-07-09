@@ -34,7 +34,7 @@ const styles = StyleSheet.create((theme) => ({
   section: {
     gap: theme.gap(1.5),
     padding: theme.gap(2),
-    borderRadius: theme.gap(2),
+    borderRadius: theme.radius.xl,
     borderWidth: 1,
     borderColor: theme.colors.border,
     backgroundColor: theme.colors.card,

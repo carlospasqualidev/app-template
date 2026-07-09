@@ -1,10 +1,15 @@
 import { useRouter } from "expo-router";
+import { View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 import { z } from "zod";
 
 import { Button } from "@/components/button";
 import { PasswordField, TextField, useZodForm } from "@/components/form";
-import { Screen } from "@/components/screen";
+import { toast } from "@/lib/toast";
 import { useSessionStore } from "@/stores/sessionStore";
+
+import { AuthFooter } from "../authFooter";
+import { AuthLayout } from "../authLayout";
 
 const schema = z.object({
   email: z.string().email("Informe um e-mail válido."),
@@ -29,7 +34,7 @@ export function LoginScreen() {
   });
 
   return (
-    <Screen title="Bem-vindo" description="Acesse sua conta para continuar.">
+    <AuthLayout title="Bem-vindo" subtitle="Acesse sua conta para continuar.">
       <TextField
         control={form.control}
         name="email"
@@ -45,12 +50,32 @@ export function LoginScreen() {
         label="Senha"
         placeholder="Sua senha"
       />
+
       <Button onPress={handleSubmit} loading={isAuthenticating}>
         Entrar
       </Button>
-      <Button variant="link" onPress={() => router.push("/signup")}>
-        Criar conta
-      </Button>
-    </Screen>
+
+      <View style={styles.footerGroup}>
+        <Button
+          variant="link"
+          size="sm"
+          onPress={() => toast.info("Recuperação de senha em breve.")}
+        >
+          Esqueci a senha
+        </Button>
+        <AuthFooter
+          prompt="Não tem uma conta?"
+          actionLabel="Criar conta"
+          onPress={() => router.push("/signup")}
+        />
+      </View>
+    </AuthLayout>
   );
 }
+
+const styles = StyleSheet.create((theme) => ({
+  footerGroup: {
+    alignItems: "center",
+    gap: theme.gap(0.5),
+  },
+}));

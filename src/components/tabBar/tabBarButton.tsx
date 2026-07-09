@@ -65,7 +65,7 @@ const styles = StyleSheet.create((theme) => ({
   indicator: {
     width: theme.gap(6),
     height: theme.gap(6),
-    borderRadius: theme.gap(3),
+    borderRadius: theme.radius.full,
     alignItems: "center",
     justifyContent: "center",
   },

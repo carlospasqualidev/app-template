@@ -67,6 +67,6 @@ export function Skeleton({
 const styles = StyleSheet.create((theme) => ({
   base: {
     backgroundColor: theme.colors.border,
-    borderRadius: theme.gap(1),
+    borderRadius: theme.radius.sm,
   },
 }));

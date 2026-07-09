@@ -185,7 +185,7 @@ const styles = StyleSheet.create((theme) => ({
     top: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: theme.colors.overlay,
   },
   overlayPress: {
     flex: 1,
@@ -197,8 +197,8 @@ const styles = StyleSheet.create((theme) => ({
   },
   sheet: {
     overflow: "hidden",
-    borderTopLeftRadius: theme.gap(3.5),
-    borderTopRightRadius: theme.gap(3.5),
+    borderTopLeftRadius: theme.radius.xxl,
+    borderTopRightRadius: theme.radius.xxl,
     backgroundColor: theme.colors.background,
     paddingBottom: theme.gap(2.5),
   },
@@ -219,7 +219,7 @@ const styles = StyleSheet.create((theme) => ({
     justifyContent: "center",
     minWidth: 36,
     minHeight: 36,
-    borderRadius: theme.gap(2.5),
+    borderRadius: theme.radius.full,
     backgroundColor: theme.colors.border,
   },
   body: {

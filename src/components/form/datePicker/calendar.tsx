@@ -173,7 +173,7 @@ const styles = StyleSheet.create((theme) => ({
   day: {
     width: theme.gap(4.5),
     height: theme.gap(4.5),
-    borderRadius: theme.gap(2.25),
+    borderRadius: theme.radius.full,
     alignItems: "center",
     justifyContent: "center",
   },

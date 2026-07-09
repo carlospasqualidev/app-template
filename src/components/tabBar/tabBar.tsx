@@ -51,15 +51,13 @@ const styles = StyleSheet.create((theme, rt) => {
     },
     pill: {
       overflow: "hidden",
-      borderRadius: theme.gap(3),
+      borderRadius: theme.radius.xxl,
       borderWidth: 1,
-      borderColor: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.06)",
+      borderColor: theme.colors.glassBorder,
       // Tint leve sobre o BlurView (que agora borra de verdade): baixa opacidade
       // deixa o borrão do conteúdo aparecer sem ficar legível.
-      backgroundColor: isDark
-        ? "rgba(28,33,39,0.42)"
-        : "rgba(255,255,255,0.42)",
-      shadowColor: "#000",
+      backgroundColor: theme.colors.glassSurface,
+      shadowColor: theme.colors.shadow,
       shadowOpacity: isDark ? 0 : 0.12,
       shadowRadius: 12,
       shadowOffset: { width: 0, height: 4 },

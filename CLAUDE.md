@@ -111,7 +111,7 @@ Se a resposta não é #1 ou #2, a `View` não deveria estar lá. Lembre que **Re
 - **Reuse componentes que você já criou** em vez de recriar a mesma estrutura com `View` e estilos soltos. Se um padrão aparece em duas telas, promova a um componente reutilizável.
 - **Não empilhe wrappers de layout**: um `View` com `flex` geralmente basta. `<View flex><View flex>` é code smell.
 - **Sem estilo redundante**: nada de repetir `flexDirection: 'column'` (default do RN), largura/altura que o flex já resolve, ou cor de texto que já é o default do tema.
-- **Prefira tokens do tema a número mágico.** Espaçamentos, cores e tipografia vêm do tema do Unistyles (`theme.gap(n)`, `theme.colors.*`), não de valores cravados no componente. Valor solto descalibra o ritmo visual entre telas.
+- **Prefira tokens do tema a número mágico.** Espaçamentos, cores, tipografia e **raio/curvatura** vêm do tema do Unistyles (`theme.gap(n)`, `theme.colors.*`, `theme.radius.*`), não de valores cravados no componente. Valor solto descalibra o ritmo visual entre telas.
   - ❌ `padding: 13` · `marginTop: 7` · `color: '#6b7280'`
   - ✓ `padding: theme.gap(2)` · `marginTop: theme.gap(1)` · `color: theme.colors.textMuted`
 - **Prefira estilo no elemento certo**, não num wrapper criado pra isso. Se precisa de margem num botão, ajuste o `gap` do pai ou o estilo do próprio botão.
@@ -496,7 +496,7 @@ src/screens/users/userDetails/
 
 Cada arquivo exporta apenas o seu componente público. Helpers privados (constantes, sub-componentes de uma única seção, type guards locais) ficam **dentro do arquivo onde são usados**. Utilitários compartilhados entre lista e detalhe vivem ao lado da feature (`src/screens/<feature>/<util>.ts`).
 
-**Não embrulhe a tela inteira num wrapper de spacing/padding.** Toda tela usa o componente **`Screen`** (`@/components/screen`) como raiz — ele já aplica safe area, padding horizontal, `gap` padrão entre os filhos, scroll e a folga inferior que limpa a tab bar flutuante do grupo `(app)`. Adicionar uma `View` com `gap`/`padding` na raiz da tela é redundante e descalibra o ritmo visual entre telas. Só introduza um wrapper próprio quando precisar de comportamento de layout real que o `Screen` não cobre.
+**Não embrulhe a tela inteira num wrapper de spacing/padding.** Toda tela usa o componente **`Screen`** (`@/components/screen`) como raiz (exceção: as telas de auth usam o `AuthLayout` full-bleed — ver Sessão e autenticação) — ele já aplica safe area, padding horizontal, `gap` padrão entre os filhos, scroll e a folga inferior que limpa a tab bar flutuante do grupo `(app)`. Adicionar uma `View` com `gap`/`padding` na raiz da tela é redundante e descalibra o ritmo visual entre telas. Só introduza um wrapper próprio quando precisar de comportamento de layout real que o `Screen` não cobre.
 
 **Props do `Screen`:**
 
@@ -648,6 +648,7 @@ A casca de auth já existe; o **backend concreto é plugável** (por padrão rod
 - **Gate**: o **root `_layout.tsx`** chama `validate()` no boot e, enquanto `idle`/`validating`, mostra `SessionBoot` (indicador de tela cheia — a exceção legítima da regra de loading) no lugar do `Stack`. Validar no root (e não no `(app)`) faz o navegador de rotas montar já num estado definido, sem swap de layout que quebra a tab bar. Resolvida a sessão, o `_layout.tsx` do grupo `(app)`: `unauthenticated` → `<Redirect href="/login" />`; autenticado → renderiza as tabs (`TabBar`).
 - **Grupos**: `(auth)` (público: login/signup) e `(app)` (protegido). O root `_layout.tsx` monta os providers (Query, GestureHandler, SafeArea) + o gate de sessão + `Stack` + `Toaster` + `SystemBarsBackground`.
 - **ErrorBoundary**: o `_layout.tsx` do `(app)` exporta `ErrorBoundary` (usa o `ErrorFallback` global) — toda rota protegida herda o fallback amigável + "Tentar novamente".
+- **Visual (splash + auth)**: o boot mostra o `SessionBoot` como **splash** (`BrandLogo` sobre `AuroraBackground`). Login e signup **não usam `Screen`** — usam o `AuthLayout` (`src/screens/auth/authLayout.tsx`): `AuroraBackground` (brilhos degradê na cor da marca, genéricos, via `expo-linear-gradient`) + cabeçalho + **painel de vidro** (tokens `glassSurface`/`glassBorder`). O rodapé "tem conta? / criar conta" é o `AuthFooter` compartilhado. É a exceção full-bleed à regra "toda tela usa `Screen`". Textos/labels são os que os fluxos Maestro miram — ao mexer, atualize os specs.
 
 ### Estado global
 
@@ -762,7 +763,7 @@ const [visible, setVisible] = useState(false);
 </Modal>;
 ```
 
-**Abstrações prontas para compor telas**: `Card` (`@/components/card`, superfície padrão), `Empty` (`@/components/empty`, estado vazio com ícone/título/descrição/ação), `Skeleton` (`@/components/skeleton`), `ConfirmDialog` (`@/components/confirmDialog`), `Badge` (`@/components/badge`, rótulo de status com variantes `default`/`secondary`/`success`/`warning`/`destructive`/`outline`) e `Avatar` (`@/components/avatar`, imagem via `expo-image` com fallback de iniciais por `@/lib/getInitials`). Reuse-as em vez de recriar `View` + estilo solto.
+**Abstrações prontas para compor telas**: `Card` (`@/components/card`, superfície padrão), `Empty` (`@/components/empty`, estado vazio com ícone/título/descrição/ação), `Skeleton` (`@/components/skeleton`), `ConfirmDialog` (`@/components/confirmDialog`), `Badge` (`@/components/badge`, rótulo de status com variantes `default`/`secondary`/`success`/`warning`/`destructive`/`outline`), `Avatar` (`@/components/avatar`, imagem via `expo-image` com fallback de iniciais por `@/lib/getInitials`), `AuroraBackground` (`@/components/auroraBackground`, fundo decorativo com brilhos degradê na cor da marca via `expo-linear-gradient` — genérico e adaptativo) e `BrandLogo` (`@/components/brandLogo`, wordmark da marca). Reuse-as em vez de recriar `View` + estilo solto.
 
 **Confirmações de ação** (delete, publicar, arquivar): use o **`ConfirmDialog`** (`@/components/confirmDialog`) — ele fica aberto enquanto o `onConfirm` resolve (botão com loading), fecha em sucesso e permanece aberto se a promise lançar (o erro propaga pra camada de rede, que já mostra o toast). Ref. de uso (com `useMutation` + optimistic update): [`src/screens/posts`](src/screens/posts).
 
@@ -818,9 +819,12 @@ import { Text } from "@/components/text";
 A cor primária do sistema vive em **um único token** no tema do Unistyles (`unistyles.ts`), com versão para light e dark:
 
 ```ts
-// tokens compartilhados entre os temas (gap + escala de tipografia)
+// tokens compartilhados entre os temas (gap + raio + escala de tipografia)
 const sharedTokens = {
   gap: (value: number) => value * 8,
+  // Escala de raio inspirada no shadcn (--radius base = `lg` 10px).
+  radius: { sm: 6, md: 8, lg: 10, xl: 14, xxl: 20, full: 9999 },
+  opacity: { disabled: 0.5 }, // opacidades de estado (fonte única)
   typography: {
     /* h1, h2, h3, p1, p2, p3 — ver a seção "Tipografia" */
   },
@@ -861,7 +865,9 @@ const darkTheme = {
 
 `primary` e demais usos da marca são **aliases** de `brand` — não duplicar o valor. Para trocar a marca num novo projeto, mude apenas `brand` (light + dark). Se houver gráficos, mantenha o ramp de cores harmonizado com o hue da marca.
 
-Além da marca, o tema traz `border` (traços/divisórias e contorno de card) e `brandSubtle` (fundo tênue tonado pela marca — ex.: estado selecionado). O snippet acima é resumido; o tema real (`unistyles.ts`) também tem tokens **semânticos**, cada um com seu `*Foreground`: `secondary` (superfície/botão neutro), `destructive` (ação perigosa), `success` e `warning` (status) — consumidos por `Button` e `Badge`. Ao criar um token novo, adicione-o **nas duas variantes** (light + dark). `gap` e `typography` são compartilhados entre os temas via `sharedTokens` — só as cores mudam entre light e dark.
+Além da marca, o tema traz `border` (traços/divisórias e contorno de card) e `brandSubtle` (fundo tênue tonado pela marca — ex.: estado selecionado). O snippet acima é resumido; o tema real (`unistyles.ts`) também tem tokens **semânticos**, cada um com seu `*Foreground`: `secondary` (superfície/botão neutro), `destructive` (ação perigosa), `success` e `warning` (status) — consumidos por `Button` e `Badge`. Ao criar um token novo, adicione-o **nas duas variantes** (light + dark). `gap`, `radius`, `opacity` e `typography` são compartilhados entre os temas via `sharedTokens` — só as cores mudam entre light e dark. Estado desabilitado usa `theme.opacity.disabled` (nunca `opacity: 0.5` solto). Constante de a11y (alvo de toque 44pt / alturas de controle) fica literal de propósito — **não** deve escalar com o tema, senão um ajuste na base quebraria a acessibilidade.
+
+**Curvatura (`theme.radius.*`)**: escala inspirada no shadcn (`--radius` base = `lg` 10px), fonte única de raio do app — `sm 6` (checkbox/skeleton), `md 8` (botões, inputs, badge, controles), `lg 10` (base), `xl 14` (cards/superfícies), `xxl 20` (bottom sheet), `full` (círculos e pílulas: radio, avatar, dia do calendário, indicador da tab bar). **Nunca crave `borderRadius` solto nem repita valor** — use o token; se faltar um degrau, ajuste a escala em `unistyles.ts` (nas duas variantes via `sharedTokens`), não invente número na tela. Círculos genuínos (largura = altura) podem usar `borderRadius: size / 2` quando o tamanho é dinâmico (ex.: `Avatar`).
 
 **Dark mode em superfícies "card-like"**: use `colors.card` (mais claro que `background` no dark, dando elevação) e remova sombra no dark (sombra não rende em fundo escuro).
 

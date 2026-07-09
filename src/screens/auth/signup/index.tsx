@@ -3,8 +3,10 @@ import { z } from "zod";
 
 import { Button } from "@/components/button";
 import { PasswordField, TextField, useZodForm } from "@/components/form";
-import { Screen } from "@/components/screen";
 import { useSessionStore } from "@/stores/sessionStore";
+
+import { AuthFooter } from "../authFooter";
+import { AuthLayout } from "../authLayout";
 
 const schema = z.object({
   name: z.string().min(2, "Informe seu nome."),
@@ -30,11 +32,7 @@ export function SignupScreen() {
   });
 
   return (
-    <Screen
-      title="Nova conta"
-      description="Preencha seus dados para começar."
-      showBackButton
-    >
+    <AuthLayout title="Nova conta" subtitle="Preencha seus dados para começar.">
       <TextField
         control={form.control}
         name="name"
@@ -56,9 +54,16 @@ export function SignupScreen() {
         label="Senha"
         placeholder="Mínimo de 8 caracteres"
       />
+
       <Button onPress={handleSubmit} loading={isAuthenticating}>
         Criar conta
       </Button>
-    </Screen>
+
+      <AuthFooter
+        prompt="Já tem uma conta?"
+        actionLabel="Entrar"
+        onPress={() => router.back()}
+      />
+    </AuthLayout>
   );
 }

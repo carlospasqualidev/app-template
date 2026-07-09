@@ -85,14 +85,14 @@ const styles = StyleSheet.create((theme) => ({
     minHeight: 44,
     variants: {
       disabled: {
-        true: { opacity: 0.5 },
+        true: { opacity: theme.opacity.disabled },
       },
     },
   },
   outer: {
     width: theme.gap(2.5),
     height: theme.gap(2.5),
-    borderRadius: theme.gap(1.25),
+    borderRadius: theme.radius.full,
     borderWidth: 1,
     borderColor: theme.colors.border,
     alignItems: "center",
@@ -106,7 +106,7 @@ const styles = StyleSheet.create((theme) => ({
   inner: {
     width: theme.gap(1.25),
     height: theme.gap(1.25),
-    borderRadius: theme.gap(0.75),
+    borderRadius: theme.radius.full,
     backgroundColor: theme.colors.brand,
   },
 }));

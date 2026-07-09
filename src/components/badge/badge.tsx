@@ -61,7 +61,7 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.gap(0.5),
     paddingHorizontal: theme.gap(1),
     paddingVertical: theme.gap(0.25),
-    borderRadius: theme.gap(1),
+    borderRadius: theme.radius.md,
     backgroundColor: theme.colors.brand,
     variants: {
       variant: {

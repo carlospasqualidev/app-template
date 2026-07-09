@@ -1,32 +1,32 @@
 import { ActivityIndicator, View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
-import { Text } from "@/components/text";
+import { AuroraBackground } from "@/components/auroraBackground";
+import { BrandLogo } from "@/components/brandLogo";
 
 /**
- * Indicador de tela cheia legítimo: aparece só no boot, enquanto a sessão é
- * validada e antes de qualquer rota protegida renderizar (exceção da regra de
- * loading em "Loading e estados intermediários").
+ * Splash de boot: logo da marca sobre o fundo com brilhos, com um indicador
+ * discreto. Aparece só enquanto a sessão é validada, antes de qualquer rota
+ * protegida renderizar (exceção legítima da regra de loading).
  */
 export function SessionBoot() {
   const { theme } = useUnistyles();
 
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color={theme.colors.brand} />
-      <Text variant="p3" color="muted">
-        Carregando…
-      </Text>
-    </View>
+    <AuroraBackground>
+      <View style={styles.center}>
+        <BrandLogo />
+        <ActivityIndicator color={theme.colors.brand} />
+      </View>
+    </AuroraBackground>
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
-  container: {
+  center: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: theme.gap(2),
-    backgroundColor: theme.colors.background,
+    gap: theme.gap(3),
   },
 }));
