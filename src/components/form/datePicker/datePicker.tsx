@@ -3,7 +3,7 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { CalendarDays } from "lucide-react-native";
 import { useState } from "react";
-import { Platform, Pressable, View } from "react-native";
+import { Keyboard, Platform, Pressable, View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 import { Button } from "@/components/button";
@@ -96,8 +96,12 @@ function DateInput({
         accessibilityRole="button"
         accessibilityLabel="Abrir calendário"
         disabled={disabled}
-        hitSlop={8}
-        onPress={() => setIsOpen(true)}
+        // Fecha o teclado do input ao abrir o calendário (evita o flick do
+        // teclado numérico abrindo e fechando na transição para o modal).
+        onPress={() => {
+          Keyboard.dismiss();
+          setIsOpen(true);
+        }}
         style={styles.iconButton}
       >
         <CalendarDays size={18} color={theme.colors.textMuted} />
@@ -230,10 +234,13 @@ const styles = StyleSheet.create((theme) => ({
     paddingRight: theme.gap(5.5),
   },
   iconButton: {
+    // Cobre toda a faixa reservada à direita (mesmo `paddingRight` do input),
+    // assim o toque no ícone cai no Pressable e não foca o TextInput embaixo.
     position: "absolute",
-    right: theme.gap(1.5),
+    right: 0,
     top: 0,
     bottom: 0,
+    width: theme.gap(5.5),
     alignItems: "center",
     justifyContent: "center",
   },

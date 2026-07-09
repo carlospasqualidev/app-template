@@ -279,6 +279,14 @@ src/tests/
 - Componente reutilizável recebe teste cobrindo o contrato público (props obrigatórias, estados, handlers). Ao mudar a API dele, atualize o teste junto, não depois.
 - Fluxos de ponta a ponta (login, navegação principal, checkout) ficam em **Maestro** (`.maestro/*.yaml`), não em teste de unidade. Rodam no app real (dev build + emulador/device) via `npm run test:e2e` (precisa do CLI do Maestro, instalado fora do npm — ver [`.maestro/README.md`](.maestro/README.md)). Os fluxos miram por **texto visível / label de acessibilidade** (placeholder de input, rótulo de aba, título de tela) — o mesmo caminho do leitor de tela; ao mudar textos da UI, atualize os specs. Fluxos prontos: `login`, `navigation`, `logout`, `deletePost`.
 
+### Rode o Maestro ao concluir a tarefa (obrigatório)
+
+**Ao concluir qualquer tarefa que toque a UI — tela nova, componente novo, mudança de fluxo, ou qualquer alteração visível ao usuário — rode os fluxos E2E do Maestro** (`npm run test:e2e`), além dos testes unitários (`npm run check`). Uma tarefa **não está pronta** sem o app exercitado ponta a ponta no device/emulador.
+
+- Se a tarefa introduz um fluxo relevante novo (criar, editar, excluir, navegar para uma área nova), **adicione um fluxo `.maestro/<nome>.yaml`** cobrindo-o. Se muda textos/labels da UI, **atualize os specs** que miram por eles (o Maestro casa por texto/label de acessibilidade).
+- **Pré-requisito**: dev build instalado + Metro rodando. Se a tarefa mexeu em dependência/módulo nativo, **reconstrua antes** (`npx expo run:android`) — rodar contra um build defasado trava o app na splash e o E2E falha por engano (não é regressão real).
+- Reporte o resultado dos fluxos junto com o do `npm run check`. Falhou? Investigue a causa (regressão real vs. seletor desatualizado vs. build/Metro) antes de dar a tarefa por concluída. Gotchas e seletores em [`.maestro/README.md`](.maestro/README.md).
+
 ### Como escrever testes (práticas)
 
 Três regras pegam 90% da qualidade de teste:
