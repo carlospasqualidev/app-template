@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 
 import { AuroraBackground } from "@/components/auroraBackground";
+import { Card } from "@/components/card";
 import { Text } from "@/components/text";
 
 interface IAuthLayoutProps {
@@ -38,7 +39,9 @@ export function AuthLayout({ title, subtitle, children }: IAuthLayoutProps) {
                 </Text>
               ) : null}
             </View>
-            <View style={styles.panel}>{children}</View>
+            <Card variant="glass" style={styles.panel}>
+              {children}
+            </Card>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -60,11 +63,8 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.gap(1),
   },
   panel: {
+    // Vidro (fundo/borda/raio) vem do `Card variant="glass"`; aqui só o espaçamento.
     gap: theme.gap(2),
     padding: theme.gap(2.5),
-    borderRadius: theme.radius.xl,
-    borderWidth: 1,
-    borderColor: theme.colors.glassBorder,
-    backgroundColor: theme.colors.glassSurface,
   },
 }));

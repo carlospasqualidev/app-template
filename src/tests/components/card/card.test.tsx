@@ -21,4 +21,13 @@ describe("Card", () => {
     );
     expect(screen.getByLabelText("cartão de resumo")).toBeOnTheScreen();
   });
+
+  it("renderiza a variante glass", () => {
+    render(
+      <Card variant="glass">
+        <Text>vidro</Text>
+      </Card>,
+    );
+    expect(screen.getByText("vidro")).toBeOnTheScreen();
+  });
 });
