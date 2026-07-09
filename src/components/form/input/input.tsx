@@ -34,7 +34,7 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.colors.card,
     paddingHorizontal: theme.gap(1.5),
     color: theme.colors.textForeground,
-    fontSize: 16,
+    fontSize: theme.typography.p2.fontSize,
     variants: {
       error: {
         true: { borderColor: theme.colors.destructive },

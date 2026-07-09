@@ -1,6 +1,6 @@
 import { FlashList } from "@shopify/flash-list";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Newspaper, Trash2 } from "lucide-react-native";
+import { CloudOff, Newspaper, Trash2 } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { Pressable, View } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
@@ -94,14 +94,16 @@ export function PostsScreen() {
       {isPending ? (
         <PostListSkeleton />
       ) : isError ? (
-        <View style={styles.center}>
-          <Text variant="p2" color="muted" align="center">
-            Não foi possível carregar o feed.
-          </Text>
-          <Button variant="outline" onPress={() => refetch()}>
-            Tentar novamente
-          </Button>
-        </View>
+        <Empty
+          icon={CloudOff}
+          title="Não foi possível carregar o feed"
+          description="Verifique sua conexão e tente novamente."
+          action={
+            <Button variant="outline" onPress={() => refetch()}>
+              Tentar novamente
+            </Button>
+          }
+        />
       ) : data.length === 0 ? (
         <Empty
           icon={Newspaper}
@@ -141,12 +143,6 @@ export function PostsScreen() {
 }
 
 const styles = StyleSheet.create((theme, rt) => ({
-  center: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: theme.gap(2),
-  },
   listContent: {
     paddingBottom: theme.gap(11) + rt.insets.bottom,
   },

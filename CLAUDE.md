@@ -260,7 +260,7 @@ Regras práticas:
 - Jest (preset `jest-expo`) + React Native Testing Library (RNTL), e Maestro para E2E.
 - **Comandos**: `npm test` (Jest), `npm run typecheck` (`tsc --noEmit`), `npm run lint`, `npm run format` (Prettier), `npm run check` (lint + typecheck + test — rode antes de empurrar). O `pre-commit` (Husky + lint-staged) roda ESLint+Prettier nos arquivos staged; o `pre-push` roda typecheck + test.
 - Testes unitários/integração vivem em `src/tests/`, organizados em pastas — uma por componente/módulo, com `<name>.test.ts(x)` dentro.
-- Setup global em `src/tests/setup.ts` — importa o **mock do Unistyles** (`react-native-unistyles/mocks`) e a config de temas (`unistyles.ts`); sem isso os componentes não renderizam no Jest.
+- Setup global em `src/tests/setup.ts` — importa o **mock do Unistyles** (`react-native-unistyles/mocks`) + a config de temas (`unistyles.ts`) e registra mocks manuais de **`react-native-reanimated`** e **`react-native-safe-area-context`** (sem runtime nativo no Jest). Sem isso os componentes não renderizam. O `jest.config.js` estende o `transformIgnorePatterns` do `jest-expo` para transpilar `@rn-primitives` (publicado como JSX não compilado) — necessário para testar componentes montados sobre rn-primitives (ex.: `Checkbox`).
 - **`src/tests/` é excluído do `tsc --noEmit`** (o `setup.ts` importa o mock do Unistyles, cujo source arrasta tipos web e quebra a checagem). Os testes rodam via Jest/Babel — o gate de tipos cobre o app, o Jest cobre os testes.
 - O componente/módulo é importado via alias `@/...`, nunca por caminho relativo. Para testar o `useZodForm`, importe de `@/components/form/useZodForm` (não do barrel `@/components/form`, que arrasta ícones e outros módulos pesados pro ambiente de teste).
 
@@ -277,7 +277,7 @@ src/tests/
 - Teste o caminho de falha, não só o happy path.
 - Testes legíveis — eles documentam o comportamento esperado.
 - Componente reutilizável recebe teste cobrindo o contrato público (props obrigatórias, estados, handlers). Ao mudar a API dele, atualize o teste junto, não depois.
-- Fluxos de ponta a ponta (login, navegação principal, checkout) ficam em **Maestro** (`.maestro/*.yaml`), não em teste de unidade. Rodam no app real (dev build + emulador/device) via `npm run test:e2e` (precisa do CLI do Maestro, instalado fora do npm — ver [`.maestro/README.md`](.maestro/README.md)). Os fluxos miram por **texto visível / label de acessibilidade** (placeholder de input, rótulo de aba, título de tela) — o mesmo caminho do leitor de tela; ao mudar textos da UI, atualize os specs. Fluxos prontos: `login`, `navigation`, `logout`.
+- Fluxos de ponta a ponta (login, navegação principal, checkout) ficam em **Maestro** (`.maestro/*.yaml`), não em teste de unidade. Rodam no app real (dev build + emulador/device) via `npm run test:e2e` (precisa do CLI do Maestro, instalado fora do npm — ver [`.maestro/README.md`](.maestro/README.md)). Os fluxos miram por **texto visível / label de acessibilidade** (placeholder de input, rótulo de aba, título de tela) — o mesmo caminho do leitor de tela; ao mudar textos da UI, atualize os specs. Fluxos prontos: `login`, `navigation`, `logout`, `deletePost`.
 
 ### Como escrever testes (práticas)
 
@@ -405,7 +405,7 @@ Spinner gigante centralizado no lugar do conteúdo atrasa a percepção do que a
 - **Skeleton granular:** coloque no lugar **exato** do dado, dentro do card real — não no card inteiro.
 - **Botão com loading:** spinner pequeno inline **dentro do botão** que disparou a ação, não spinner de tela.
 
-Regra adicional: skeletons em arquivos próprios, não inline no arquivo de tela. Co-localize com o componente que ele simula (`src/screens/users/userListSkeleton.tsx`) ou em uma pasta de componentes reutilizáveis. O skeleton deve reproduzir o layout real (mesmas margens, espaçamentos, ordem visual) para minimizar salto quando o conteúdo carregar.
+Regra adicional: skeletons em arquivos próprios, não inline no arquivo de tela. Co-localize com o componente que ele simula (ex. real no template: `src/screens/posts/postListSkeleton.tsx`) ou em uma pasta de componentes reutilizáveis. O skeleton deve reproduzir o layout real (mesmas margens, espaçamentos, ordem visual) para minimizar salto quando o conteúdo carregar.
 
 ### Anti-padrões a evitar
 
@@ -425,9 +425,9 @@ Indicador grande de tela cheia **só** quando ainda não existe shell pra mostra
 ```
 src/
 ├── app/                 # Expo Router — rotas (arquivos finos que só orquestram)
-│   ├── _layout.tsx      # raiz: providers (Query, GestureHandler, SafeArea) + Stack + Toaster
+│   ├── _layout.tsx      # raiz: providers + gate de sessão (validate/SessionBoot) + Stack + Toaster
 │   ├── (auth)/          # grupo público — _layout (Stack), login, signup
-│   └── (app)/           # grupo protegido — _layout (gate de sessão + tabs + ErrorBoundary), telas
+│   └── (app)/           # grupo protegido — _layout (redirect + tabs + ErrorBoundary), telas
 ├── assets/              # imagens e estáticos
 ├── components/          # componentes próprios (rn-primitives + Unistyles); form/ agrupa o kit
 ├── hooks/               # hooks reutilizáveis
@@ -446,15 +446,15 @@ index.ts                 # entrypoint (importa expo-router/entry + unistyles)
 
 ### Imports
 
-- Use o alias `@/` para imports internos de `src/` (ex.: `@/components/button`, `@/lib/utils`). Configure em `tsconfig.json` e no `babel.config.js`.
+- Use o alias `@/` para imports internos de `src/` (ex.: `@/components/button`, `@/lib/toast`). Configure em `tsconfig.json` e no `babel.config.js`.
 - Não use caminhos relativos longos (`../../../`) — troque por `@/`.
 
 ### Rotas (Expo Router — file-based)
 
 - Cada rota é um arquivo em `app/`. **O arquivo de rota é fino**: importa o componente da tela de `src/screens/<feature>/` e cuida só de params/options. Lógica e UI moram em `src/screens/`, não em `app/`.
 - **Rotas protegidas ficam no grupo `(app)/`**, cujo `_layout.tsx` envolve a validação de sessão + layout. Login/signup ficam no grupo `(auth)/`.
-- **Toda rota (ou layout) protegida exporta um `ErrorBoundary`** — sem isso, um erro lançado no render derruba o app num fallback genérico. Aponte para um componente de fallback de erro do projeto, com mensagem amigável em pt-BR + botão "Tentar novamente" disparando `router.invalidate()`.
-- Navegação programática via `useRouter()` (`router.push`, `router.replace`, `router.back`). Links declarativos via `Link` do Expo Router. Para links externos (`http`, `mailto:`, `tel:`), abra via `expo-web-browser`/`Linking`, não via roteamento interno.
+- **Toda rota (ou layout) protegida exporta um `ErrorBoundary`** — sem isso, um erro lançado no render derruba o app num fallback genérico. Aponte para o `ErrorFallback` (`@/components/errorFallback`): mensagem amigável em pt-BR + botão "Tentar novamente" que dispara o `retry` recebido via `ErrorBoundaryProps` do Expo Router. Ref.: o `ErrorBoundary` exportado em `src/app/(app)/_layout.tsx`.
+- Navegação programática via `useRouter()` (`router.push`, `router.replace`, `router.back`). Links declarativos via `Link` do Expo Router. Para links externos (`http`, `mailto:`, `tel:`), abra via `Linking` (do `react-native`) — ou adicione `expo-web-browser` se quiser um browser in-app —, não via roteamento interno.
 
 Esqueleto de uma tela:
 
@@ -637,13 +637,13 @@ A casca de auth já existe; o **backend concreto é plugável** (por padrão rod
 - **Store**: `useSessionStore` (`@/stores/sessionStore`, Zustand) guarda `user` + `status` (`idle`/`validating`/`authenticated`/`unauthenticated`) + `isAuthenticating`, e expõe `validate`/`signIn`/`signUp`/`signOut`. Ele mantém o `sessionUserRef` (usado pelo log de erros) sincronizado.
 - **Serviço**: `@/services/session/sessionService` — hoje em **modo fake** (aceita qualquer credencial, persiste no secure-store), com a **implementação real comentada** no fim do arquivo. Para plugar o backend: siga as instruções no topo do arquivo e apague `fakeSession.ts`.
 - **Token**: `@/services/session/sessionToken` (`get/set/clear` sobre `expo-secure-store`) — nunca em `AsyncStorage`. O interceptor do `api` injeta no header `Authorization`.
-- **Gate**: o `_layout.tsx` do grupo `(app)` chama `validate()` no boot e, enquanto `idle`/`validating`, mostra `SessionBoot` (indicador de tela cheia — a exceção legítima da regra de loading); `unauthenticated` → `<Redirect href="/login" />`; autenticado → renderiza as tabs.
-- **Grupos**: `(auth)` (público: login/signup) e `(app)` (protegido). O root `_layout.tsx` monta os providers + `Stack` + `Toaster`.
+- **Gate**: o **root `_layout.tsx`** chama `validate()` no boot e, enquanto `idle`/`validating`, mostra `SessionBoot` (indicador de tela cheia — a exceção legítima da regra de loading) no lugar do `Stack`. Validar no root (e não no `(app)`) faz o navegador de rotas montar já num estado definido, sem swap de layout que quebra a tab bar. Resolvida a sessão, o `_layout.tsx` do grupo `(app)`: `unauthenticated` → `<Redirect href="/login" />`; autenticado → renderiza as tabs (`TabBar`).
+- **Grupos**: `(auth)` (público: login/signup) e `(app)` (protegido). O root `_layout.tsx` monta os providers (Query, GestureHandler, SafeArea) + o gate de sessão + `Stack` + `Toaster` + `SystemBarsBackground`.
 - **ErrorBoundary**: o `_layout.tsx` do `(app)` exporta `ErrorBoundary` (usa o `ErrorFallback` global) — toda rota protegida herda o fallback amigável + "Tentar novamente".
 
 ### Estado global
 
-- Zustand para client state global compartilhado, em `src/stores/` (ex.: `sessionStore`). Persistência de preferências via middleware `persist` com `MMKV`.
+- Zustand para client state global compartilhado, em `src/stores/` (ex.: `sessionStore`). Para persistir preferência não-sensível, use o middleware `persist` do Zustand com `MMKV` (`react-native-mmkv` — módulo nativo, **não vem instalado**; adicione quando precisar e reconstrua o dev build).
 - TanStack Query para server state — não duplique resposta de API no Zustand.
 - Estado local de tela: `useState` normal.
 
@@ -754,7 +754,7 @@ const [visible, setVisible] = useState(false);
 </Modal>;
 ```
 
-**Abstrações prontas para compor telas**: `Card` (`@/components/card`, superfície padrão), `Empty` (`@/components/empty`, estado vazio com ícone/título/descrição/ação), `Skeleton` (`@/components/skeleton`) e `ConfirmDialog` (`@/components/confirmDialog`). Reuse-as em vez de recriar `View` + estilo solto.
+**Abstrações prontas para compor telas**: `Card` (`@/components/card`, superfície padrão), `Empty` (`@/components/empty`, estado vazio com ícone/título/descrição/ação), `Skeleton` (`@/components/skeleton`), `ConfirmDialog` (`@/components/confirmDialog`), `Badge` (`@/components/badge`, rótulo de status com variantes `default`/`secondary`/`success`/`warning`/`destructive`/`outline`) e `Avatar` (`@/components/avatar`, imagem via `expo-image` com fallback de iniciais por `@/lib/getInitials`). Reuse-as em vez de recriar `View` + estilo solto.
 
 **Confirmações de ação** (delete, publicar, arquivar): use o **`ConfirmDialog`** (`@/components/confirmDialog`) — ele fica aberto enquanto o `onConfirm` resolve (botão com loading), fecha em sucesso e permanece aberto se a promise lançar (o erro propaga pra camada de rede, que já mostra o toast). Ref. de uso (com `useMutation` + optimistic update): [`src/screens/posts`](src/screens/posts).
 
@@ -853,8 +853,19 @@ const darkTheme = {
 
 `primary` e demais usos da marca são **aliases** de `brand` — não duplicar o valor. Para trocar a marca num novo projeto, mude apenas `brand` (light + dark). Se houver gráficos, mantenha o ramp de cores harmonizado com o hue da marca.
 
-Além da marca, o tema traz `border` (traços/divisórias e contorno de card) e `brandSubtle` (fundo tênue tonado pela marca — ex.: estado selecionado). `gap` e `typography` são compartilhados entre os temas via `sharedTokens` — só as cores mudam entre light e dark.
+Além da marca, o tema traz `border` (traços/divisórias e contorno de card) e `brandSubtle` (fundo tênue tonado pela marca — ex.: estado selecionado). O snippet acima é resumido; o tema real (`unistyles.ts`) também tem tokens **semânticos**, cada um com seu `*Foreground`: `secondary` (superfície/botão neutro), `destructive` (ação perigosa), `success` e `warning` (status) — consumidos por `Button` e `Badge`. Ao criar um token novo, adicione-o **nas duas variantes** (light + dark). `gap` e `typography` são compartilhados entre os temas via `sharedTokens` — só as cores mudam entre light e dark.
 
 **Dark mode em superfícies "card-like"**: use `colors.card` (mais claro que `background` no dark, dando elevação) e remova sombra no dark (sombra não rende em fundo escuro).
 
-Use `adaptiveThemes: true` para seguir o tema do sistema (temas precisam se chamar `light` e `dark`), ou `initialTheme` para controle manual — **nunca os dois juntos** (são mutuamente exclusivos e dão erro).
+O tema é **sempre automático**: `adaptiveThemes: true` segue o tema do sistema (temas precisam se chamar `light` e `dark`). **Não há seletor de tema no app** — não use `initialTheme`, `setTheme` nem `setAdaptiveThemes`; deixe o Unistyles seguir o sistema. (Isso também evita o bug de repaint pela metade que o `setTheme` manual causava numa tela já aberta.)
+
+### Sempre projete para claro E escuro (obrigatório)
+
+**Todo componente e toda tela nascem suportando os dois temas — não é opcional nem "depois".** O app segue o tema do sistema, então cada superfície precisa ficar correta e legível nos dois. Regressão comum: construir e olhar só no tema do seu device (normalmente escuro) e o claro sair quebrado.
+
+Regras práticas:
+
+- **Cor só via token do tema** (`theme.colors.*`) — nunca hex/rgba cravado num componente ou tela. Se um tom novo é necessário, adicione o token em `unistyles.ts` **nas duas variantes** (light + dark), como fizemos com `success`/`warning`. Cor literal só é aceitável para overlay neutro que não pertence ao tema (ex.: `rgba(0,0,0,0.6)` do overlay de modal).
+- **Verifique nos dois temas antes de considerar pronto.** Mude o tema do sistema (Configurações do Android/iOS) e confira contraste, elevação e bordas em light e dark. Contraste mínimo 4.5:1 (ver Acessibilidade).
+- **Elevação no dark vem de `card` mais claro que `background`**, não de sombra (sombra não rende em fundo escuro) — remova/reduza sombra no dark.
+- **Estilize sempre de forma idiomática** (`StyleSheet.create((theme) => ({ ... }))` com `theme.colors.*`), inclusive o fundo (`backgroundColor: theme.colors.background`). Com o tema seguindo o sistema, a troca é rara e acompanha o ciclo de vida do app (você sai para as Configurações e volta), então aplica correto — sem necessidade de qualquer truque de repaint.

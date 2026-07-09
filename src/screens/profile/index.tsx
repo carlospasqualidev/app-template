@@ -6,7 +6,6 @@ import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { Screen } from "@/components/screen";
 import { Text } from "@/components/text";
-import { ThemeToggle } from "@/components/themeToggle";
 import { useSessionStore } from "@/stores/sessionStore";
 
 export function ProfileScreen() {
@@ -26,13 +25,6 @@ export function ProfileScreen() {
         </View>
       ) : null}
 
-      <View style={styles.block}>
-        <Text variant="p2" weight="semibold">
-          Aparência
-        </Text>
-        <ThemeToggle />
-      </View>
-
       <Button variant="outline" onPress={() => signOut()}>
         Sair
       </Button>
@@ -43,9 +35,6 @@ export function ProfileScreen() {
 const styles = StyleSheet.create((theme) => ({
   header: {
     alignItems: "center",
-    gap: theme.gap(1),
-  },
-  block: {
     gap: theme.gap(1),
   },
 }));

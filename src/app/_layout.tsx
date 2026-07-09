@@ -10,8 +10,6 @@ import { SystemBarsBackground } from "@/components/systemBars";
 import { useReactQueryFocus } from "@/hooks/useReactQueryFocus";
 import { queryClient } from "@/lib/queryClient";
 import { useSessionStore } from "@/stores/sessionStore";
-// Cria/reidrata o store de tema no boot: aplica a preferência salva (system/light/dark).
-import "@/stores/themeStore";
 
 export default function RootLayout() {
   const status = useSessionStore((state) => state.status);
