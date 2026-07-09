@@ -1,56 +1,72 @@
-# Welcome to your Expo app 👋
+# App Template
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Template de aplicativo **React Native + Expo** (SDK 56, New Architecture) reutilizável entre projetos, partindo do zero — sem biblioteca de UI, com componentes próprios.
 
-## Get started
+> A fonte de verdade de convenções e comportamento é o [`CLAUDE.md`](CLAUDE.md). Leia-o antes de contribuir.
 
-1. Install dependencies
+## Stack
 
-   ```bash
-   npm install
-   ```
+- **Expo Router** (rotas file-based) + **TanStack Query** (server state)
+- **Zustand** (client state global) • **React Hook Form + Zod** (formulários)
+- **Unistyles** (estilo com tema/variantes, claro + escuro automático) + **rn-primitives** (a11y)
+- **Axios** (cliente HTTP com interceptors) • **sonner-native** (toast)
+- **Jest + React Native Testing Library** (unit/integração) • **Maestro** (E2E)
+- ESLint (`eslint-config-expo` + `eslint-plugin-security`) + Prettier + Husky + lint-staged
 
-2. Start the app
+O app roda em **development build** (não em Expo Go — Unistyles tem código nativo).
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Começando
 
 ```bash
-npm run reset-project
+npm install
+cp .env.example .env      # preencha EXPO_PUBLIC_API_URL
+npx expo run:android      # gera e instala o dev build (uma vez)
+npx expo start            # inicia o Metro
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+A sessão vem em **modo fake** (aceita qualquer credencial) — veja como plugar o backend em `src/services/session/sessionService.ts`.
 
-### Other setup steps
+## Scripts
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+| Comando             | O que faz                                        |
+| ------------------- | ------------------------------------------------ |
+| `npm run go`        | Inicia o Metro (`expo start`)                    |
+| `npm run dev`       | Gera e roda o dev build Android                  |
+| `npm run lint`      | ESLint                                           |
+| `npm run typecheck` | `tsc --noEmit`                                   |
+| `npm test`          | Jest                                             |
+| `npm run check`     | lint + typecheck + test (rode antes de empurrar) |
+| `npm run test:e2e`  | Maestro (precisa do CLI — ver `.maestro/README`) |
+| `npm run format`    | Prettier                                         |
 
-## Learn more
+O `pre-commit` roda ESLint + Prettier nos arquivos staged; o `pre-push` roda typecheck + test.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Estrutura
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+src/
+├── app/         # Expo Router — rotas finas ((auth) público, (app) protegido)
+├── components/  # componentes próprios (rn-primitives + Unistyles); form/ agrupa o kit
+├── hooks/       # hooks reutilizáveis
+├── lib/         # utilidades puras (env, queryClient, toast)
+├── screens/     # implementação das telas (uma pasta por feature)
+├── services/    # api/ (cliente) + <módulo>/ (chamadas + schemas Zod)
+├── stores/      # Zustand (sessão)
+└── types/       # tipos de domínio
+unistyles.ts     # tema (cores, tipografia, breakpoints)
+```
 
-## Join the community
+## Convenções essenciais
 
-Join our community of developers creating universal apps.
+- **Estilo só via Unistyles** (`StyleSheet` + `theme.colors.*`/`theme.gap(n)`) — nunca hex/px cravado.
+- **Texto sempre pelo `@/components/text`**; toda tela usa `@/components/screen` como raiz.
+- **Dados do servidor sempre via TanStack Query**; chamadas de API vivem em `src/services/<módulo>/`.
+- **Formulários sempre com `useZodForm` + campos de `@/components/form`**, validados por Zod.
+- **Token de sessão em `expo-secure-store`** (nunca `AsyncStorage`).
+- **UI em pt-BR**, código em inglês. Suporte a **claro e escuro** é obrigatório em todo componente/tela.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Detalhes completos (a11y, LGPD/PII, performance, object injection, etc.) no [`CLAUDE.md`](CLAUDE.md).
+
+## Builds (EAS)
+
+Perfis em [`eas.json`](eas.json): `development` (dev client), `preview` (interno) e `production`. Para E2E 100% estável, rode o Maestro contra um build `preview`/`release` (não sobre o Metro).
