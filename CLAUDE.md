@@ -504,7 +504,9 @@ Cada arquivo exporta apenas o seu componente público. Helpers privados (constan
 - `headerActions` — nós à direita do título (ex.: botão de ação).
 - `showBackButton` (default `false`) + `onBack` — mostra a seta de voltar na linha do título; `onBack` default é `router.back()`.
 - `scrollable` (default `true`) — `ScrollView` com `keyboardShouldPersistTaps="handled"`. Passe `false` quando a tela tem o próprio scroller (ex.: `FlashList` ocupando `flex: 1`); nesse caso o scroller interno cuida da sua folga inferior.
-- `edges` (default `["top", "left", "right"]`) e `showsVerticalScrollIndicator` (default `false`).
+- `showsVerticalScrollIndicator` (default `false`).
+
+O `Screen` aplica a safe area (topo/base) via **insets do Unistyles** (`rt.insets`/`rt.statusBar`, síncronos no 1º frame), não via `SafeAreaView` do `safe-area-context` — este último aplica o padding só **depois** de medir e causava um flash de conteúdo colado na status bar no primeiro frame. O `background` cobre a tela toda (edge-to-edge) e só o conteúdo respeita as bordas.
 
 ```tsx
 // tela simples com cabeçalho

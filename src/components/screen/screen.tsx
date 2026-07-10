@@ -1,6 +1,5 @@
 import { type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
-import { type Edge, SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 
 import { BackButton } from "@/components/backButton";
@@ -14,7 +13,6 @@ interface IScreenProps {
   showBackButton?: boolean;
   onBack?: () => void;
   scrollable?: boolean;
-  edges?: Edge[];
   showsVerticalScrollIndicator?: boolean;
 }
 
@@ -26,7 +24,6 @@ export function Screen({
   showBackButton = false,
   onBack,
   scrollable = true,
-  edges = ["top", "left", "right"],
   showsVerticalScrollIndicator = false,
 }: IScreenProps) {
   const header = title ? (
@@ -55,8 +52,12 @@ export function Screen({
     </>
   );
 
+  // Safe area via insets do Unistyles (síncronos no 1º frame), não `SafeAreaView`
+  // do safe-area-context (que aplica padding após medir e causa flash de conteúdo
+  // colado na status bar no primeiro frame). O background cobre a tela toda
+  // (edge-to-edge); só o conteúdo respeita o topo/base.
   return (
-    <SafeAreaView edges={edges} style={styles.container}>
+    <View style={styles.container}>
       {scrollable ? (
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -68,7 +69,7 @@ export function Screen({
       ) : (
         <View style={styles.staticContent}>{content}</View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -81,7 +82,8 @@ const styles = StyleSheet.create((theme, rt) => ({
     flexGrow: 1,
     gap: theme.gap(3),
     paddingHorizontal: theme.gap(2),
-    paddingTop: theme.gap(1.5),
+    // `rt.statusBar.height` é síncrono; `rt.insets.top` cobre notch/cutout.
+    paddingTop: theme.gap(1.5) + Math.max(rt.insets.top, rt.statusBar.height),
     // limpa a tab bar flutuante do grupo (app)
     paddingBottom: theme.gap(11) + rt.insets.bottom,
   },
@@ -89,7 +91,7 @@ const styles = StyleSheet.create((theme, rt) => ({
     flex: 1,
     gap: theme.gap(3),
     paddingHorizontal: theme.gap(2),
-    paddingTop: theme.gap(1.5),
+    paddingTop: theme.gap(1.5) + Math.max(rt.insets.top, rt.statusBar.height),
     paddingBottom: theme.gap(2) + rt.insets.bottom,
   },
   header: {
