@@ -1,57 +1,58 @@
 import { type ReactNode } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet } from "react-native-unistyles";
 
-import { AuroraBackground } from "@/components/auroraBackground";
+import { BrandLogo } from "@/components/brandLogo";
 import { Card } from "@/components/card";
 import { Text } from "@/components/text";
 
 interface IAuthLayoutProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   children: ReactNode;
 }
 
 /**
- * Casca das telas de autenticação: fundo com brilhos (AuroraBackground), cabeçalho
- * e um painel de vidro (tokens `glassSurface`/`glassBorder`) com o formulário.
- * Compartilhada por login e signup para não repetir a estrutura.
+ * Casca das telas de autenticação: fundo sólido do tema, a marca (BrandLogo) no topo,
+ * cabeçalho opcional e um card com o formulário. Compartilhada por login e signup para
+ * não repetir a estrutura. A identidade vem da marca e da paleta.
  */
 export function AuthLayout({ title, subtitle, children }: IAuthLayoutProps) {
   return (
-    <AuroraBackground>
-      <SafeAreaView style={styles.safe}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={styles.safe}
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView behavior="padding" style={styles.safe}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <ScrollView
-            contentContainerStyle={styles.content}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
+          <BrandLogo />
+          {title || subtitle ? (
             <View style={styles.header}>
-              <Text variant="h1">{title}</Text>
+              {title ? (
+                <Text variant="h2" align="center">
+                  {title}
+                </Text>
+              ) : null}
               {subtitle ? (
-                <Text variant="p2" color="muted">
+                <Text variant="p2" color="muted" align="center">
                   {subtitle}
                 </Text>
               ) : null}
             </View>
-            <Card variant="glass" style={styles.panel}>
-              {children}
-            </Card>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </AuroraBackground>
+          ) : null}
+          <Card style={styles.panel}>{children}</Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create((theme) => ({
   safe: {
     flex: 1,
+    backgroundColor: theme.colors.background,
   },
   content: {
     flexGrow: 1,
@@ -63,7 +64,6 @@ const styles = StyleSheet.create((theme) => ({
     gap: theme.gap(1),
   },
   panel: {
-    // Vidro (fundo/borda/raio) vem do `Card variant="glass"`; aqui só o espaçamento.
     gap: theme.gap(2),
     padding: theme.gap(2.5),
   },
