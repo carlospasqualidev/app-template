@@ -30,7 +30,7 @@ export function Screen({
     <View style={styles.header}>
       <View style={styles.titleRow}>
         {showBackButton ? <BackButton onPress={onBack} /> : null}
-        <Text variant="h1" style={styles.title}>
+        <Text variant="h2" style={styles.title}>
           {title}
         </Text>
         {headerActions ? (

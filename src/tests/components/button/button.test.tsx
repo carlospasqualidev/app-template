@@ -2,10 +2,23 @@ import { render, screen, userEvent } from "@testing-library/react-native";
 
 import { Button } from "@/components/button";
 
+function StubIcon() {
+  return null;
+}
+
 describe("Button", () => {
   it("renderiza o rótulo como botão acessível", () => {
     render(<Button>Salvar</Button>);
     expect(screen.getByRole("button", { name: "Salvar" })).toBeOnTheScreen();
+  });
+
+  it("renderiza o ícone à esquerda mantendo o rótulo acessível", () => {
+    render(
+      <Button icon={StubIcon} onPress={() => {}}>
+        Editar
+      </Button>,
+    );
+    expect(screen.getByRole("button", { name: "Editar" })).toBeOnTheScreen();
   });
 
   it("dispara onPress ao tocar", async () => {

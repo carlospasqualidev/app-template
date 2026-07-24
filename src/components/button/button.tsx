@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ComponentType, type ReactNode } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -16,6 +16,8 @@ import { Text } from "@/components/text";
 
 type AppTheme = UnistylesThemes["light"];
 
+type IconComponent = ComponentType<{ size?: number; color?: string }>;
+
 export type ButtonVariant =
   "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 export type ButtonSize = "default" | "sm" | "lg" | "icon";
@@ -29,6 +31,8 @@ export interface IButtonProps extends Omit<
   size?: ButtonSize;
   loading?: boolean;
   disabled?: boolean;
+  /** Ícone à esquerda do rótulo (herda a cor do texto do botão). */
+  icon?: IconComponent;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -54,6 +58,7 @@ export function Button({
   size = "default",
   loading = false,
   disabled = false,
+  icon: Icon,
   style,
   ...props
 }: IButtonProps) {
@@ -76,15 +81,20 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator size="small" color={color} />
-      ) : typeof children === "string" ? (
-        <Text
-          weight="semibold"
-          style={[{ color }, variant === "link" && styles.link]}
-        >
-          {children}
-        </Text>
       ) : (
-        children
+        <>
+          {Icon ? <Icon size={18} color={color} /> : null}
+          {typeof children === "string" ? (
+            <Text
+              weight="semibold"
+              style={[{ color }, variant === "link" && styles.link]}
+            >
+              {children}
+            </Text>
+          ) : (
+            children
+          )}
+        </>
       )}
     </Pressable>
   );

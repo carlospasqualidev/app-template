@@ -1,9 +1,9 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import { StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SystemBars } from "react-native-edge-to-edge";
 import { useUnistyles } from "react-native-unistyles";
 import { Toaster } from "sonner-native";
 
@@ -34,12 +34,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          {/* Ícones da status bar acompanham o tema: escuros no claro, claros no escuro. */}
-          <StatusBar
-            barStyle={
-              rt.colorScheme === "dark" ? "light-content" : "dark-content"
-            }
-          />
+          {/* Ícones das DUAS barras (status + navegação) acompanham o tema do SO:
+              escuros no claro, claros no escuro. Sem isto, no edge-to-edge a barra de
+              navegação fica com botões claros (invisíveis) sobre o fundo claro. */}
+          <SystemBars style={rt.colorScheme === "dark" ? "light" : "dark"} />
           {isValidatingSession ? (
             <SessionBoot />
           ) : (

@@ -500,7 +500,7 @@ Cada arquivo exporta apenas o seu componente público. Helpers privados (constan
 
 **Props do `Screen`:**
 
-- `title` / `description` — quando `title` é passado, o `Screen` renderiza o cabeçalho (título `h1` + descrição `p2` muted). Sem `title`, a tela é só o corpo.
+- `title` / `description` — quando `title` é passado, o `Screen` renderiza o cabeçalho (título `h2` + descrição `p2` muted). Sem `title`, a tela é só o corpo.
 - `headerActions` — nós à direita do título (ex.: botão de ação).
 - `showBackButton` (default `false`) + `onBack` — mostra a seta de voltar na linha do título; `onBack` default é `router.back()`.
 - `scrollable` (default `true`) — `ScrollView` com `keyboardShouldPersistTaps="handled"`. Passe `false` quando a tela tem o próprio scroller (ex.: `FlashList` ocupando `flex: 1`); nesse caso o scroller interno cuida da sua folga inferior.
