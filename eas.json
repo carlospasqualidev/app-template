@@ -9,7 +9,8 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
+   
+      "enviroment":"preview",
       "channel": "preview"
     },
     "production": {
@@ -18,6 +19,7 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {},
+    "preview":{}
   }
 }
