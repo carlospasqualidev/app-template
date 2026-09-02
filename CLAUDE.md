@@ -52,6 +52,27 @@ Resumo: **consistência interna > inspiração externa > improvisar do zero.**
 
 ---
 
+## Documentação acompanha a mudança — parte do DoD
+
+**SEMPRE** que você mexer em algo que impacte o **funcionamento** ou a
+**usabilidade** do app (fluxo novo, mudança de comportamento, campo novo, regra,
+correção visível ao usuário), **atualize a documentação correspondente no mesmo
+PR**. Documentação divergente do código é pior que documentação inexistente.
+
+- **Doc de usuário (quando o projeto tiver uma superfície de docs):** escreva em
+  **linguagem de negócio** — o que a tela faz, como usar, o que pode/não pode,
+  **erros possíveis**. Nunca jargão de código, número de card/demanda ou caminho
+  de arquivo. Espelhe a estrutura das páginas existentes. Se houver nota de
+  versão/changelog voltado ao usuário, registre lá a mudança visível (com módulo
+  e impacto).
+- **Convenção que vai se repetir → registre neste `CLAUDE.md`.** Ao introduzir um
+  padrão novo (organização de pasta, componente compartilhado, regra de UX),
+  documente-o aqui para a próxima sessão (humana ou Claude) já chegar alinhada.
+- Só é dispensável quando a mudança **não afeta o uso** (refactor interno, teste,
+  tooling).
+
+---
+
 ## Linguagem de código
 
 - Todo código-fonte em **inglês**.
@@ -349,6 +370,11 @@ Todo texto exposto ao usuário em **português brasileiro (pt-BR)**.
 - Evite jargão técnico para usuários operacionais.
   - Correto: `Falha ao salvar o registro. Tente novamente.`
   - Evite: `Unexpected persistence layer failure.`
+- **Nunca exponha referência interna ao usuário**: número de card/demanda, hash/código de merge, nome de branch, jargão de implementação. Não entra em label, placeholder, mensagem, toast nem em texto vindo do backend renderizado na tela. Se aparecer numa descrição/label (inclusive dado de mock/seed), é bug — corrija na origem.
+
+### Dado derivado, rótulos e mensagens vêm do backend
+
+**Regra de negócio não vive no cliente.** Cálculos, validações de estado, rótulos pt-BR e mensagens derivadas de regra vêm **prontos do backend**; a tela só renderiza. Se você se pegar reimplementando uma regra no app (recomputar totais, decidir um estado, traduzir um enum, montar uma mensagem derivada), pare: o backend deveria estar entregando pronto. Isso mantém uma única fonte de verdade e evita que duas telas — ou o app e a web do mesmo produto — divirjam ao reimplementar a mesma regra.
 
 ### Acentuação e codificação (evitar mojibake)
 
@@ -494,7 +520,7 @@ src/screens/users/userDetails/
 └── permissionsTab.tsx
 ```
 
-Cada arquivo exporta apenas o seu componente público. Helpers privados (constantes, sub-componentes de uma única seção, type guards locais) ficam **dentro do arquivo onde são usados**. Utilitários compartilhados entre lista e detalhe vivem ao lado da feature (`src/screens/<feature>/<util>.ts`).
+Cada arquivo exporta apenas o seu componente público. Helpers privados (constantes, sub-componentes de uma única seção, type guards locais) ficam **dentro do arquivo onde são usados**. Utilitários compartilhados entre sub-telas vão em `src/screens/<feature>/utils/` (ver "Uma pasta por sub-tela da feature" abaixo).
 
 **Não embrulhe a tela inteira num wrapper de spacing/padding.** Toda tela usa o componente **`Screen`** (`@/components/screen`) como raiz (exceção: as telas de auth usam o `AuthLayout` full-bleed — ver Sessão e autenticação) — ele já aplica safe area, padding horizontal, `gap` padrão entre os filhos, scroll e a folga inferior que limpa a tab bar flutuante do grupo `(app)`. Adicionar uma `View` com `gap`/`padding` na raiz da tela é redundante e descalibra o ritmo visual entre telas. Só introduza um wrapper próprio quando precisar de comportamento de layout real que o `Screen` não cobre.
 
@@ -521,6 +547,29 @@ O `Screen` aplica a safe area (topo/base) via **insets do Unistyles** (`rt.inset
 ```
 
 O arquivo de rota continua fino (delega para `src/screens/<feature>/`); é o componente da tela que renderiza o `Screen`.
+
+#### Uma pasta por sub-tela da feature
+
+Quando a feature tem telas distintas (listagem, detalhe — e às vezes criar/editar dedicados), **cada sub-tela ganha sua própria pasta** com o `index.tsx` daquela tela + **os componentes que só existem nela**. Regra dura:
+
+- **Componente/utilitário exclusivo de uma sub-tela → dentro da pasta daquela sub-tela.** Um modal/skeleton/item de lista que só aparece no detalhe mora em `details/`; o que só aparece na listagem, em `list/`.
+- **Compartilhado entre sub-telas → numa pasta `utils/` da feature — nunca solto na raiz.** Campos de formulário reaproveitados por criar **e** editar, `queryKeys.ts`, constantes e helpers ficam em `src/screens/<feature>/utils/`.
+- Nunca deixe um componente exclusivo de uma tela "solto" na raiz da feature — se só uma tela usa, ele pertence à pasta dela; se mais de uma usa, vai para `utils/`.
+
+```
+src/screens/users/
+├── utils/                     # comuns/compartilhados (nunca soltos na raiz)
+│   ├── userFormFields.tsx     # reaproveitado por criar + editar
+│   └── queryKeys.ts
+├── list/
+│   ├── index.tsx              # tela de listagem
+│   └── userListSkeleton.tsx
+└── details/
+    ├── index.tsx              # tela de detalhe
+    └── userDetailSkeleton.tsx
+```
+
+Os arquivos de rota do Expo Router continuam finos, cada um delegando para a pasta da sua sub-tela (`src/app/(app)/users/index.tsx` → `list/`; `src/app/(app)/users/[id].tsx` → `details/`). Chamadas de API continuam fora de `screens/`, em `services/<módulo>/` (ver HTTP).
 
 ### HTTP
 
@@ -704,6 +753,52 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 ```
 
+#### Nenhum input sem placeholder (regra dura)
+
+**Todo campo de entrada tem um `placeholder` que orienta o que digitar/selecionar — sem exceção.** Vale para `TextField`, `TextareaField`, `PasswordField`, `SelectField`, `MultiSelectField`, `DateField` e qualquer campo mascarado/pesquisável que você criar. Um campo sem placeholder (só o rótulo e a caixa vazia) deixa o usuário sem pista do formato/ação esperados.
+
+- O placeholder **complementa** o rótulo, **nunca o substitui** (o `label` continua obrigatório — ver a11y "Toda input precisa de label").
+- **Texto/número/máscara:** exemplo do formato/conteúdo esperado ("Digite o código", "seu@email.com").
+- **Select/MultiSelect/campo pesquisável:** ação de escolha ("Selecione", "Selecione o cliente", "Todos" em filtro multi). Os primitivos já trazem `"Selecione"` e `"DD/MM/AAAA"` como default — não troque por algo mais vago.
+- **Únicas exceções** (não têm placeholder por natureza): `SwitchField`, `CheckboxField`, `RadioGroupField` e campos read-only de exibição.
+
+#### Máscara de quantidade e valor (pt-BR) — obrigatória (preenchimento E exibição)
+
+**Todo campo de quantidade (com casas decimais), valor monetário ou número com decimais usa formato pt-BR (milhar `.` e decimal `,`) — sem exceção.** Vale para **entrada** (formulários) e **exibição** (listas, detalhes, resumos). Número decimal cru na tela (`1500` onde deveria ser `1.500,00`) é bug de produto.
+
+- **Exibição:** formate com `toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })`, ou reaproveite o valor **já formatado** quando o backend o entrega pronto. Não jogue número cru dentro de um `Text`.
+- **Entrada:** o campo mascara **na digitação** (os dígitos preenchem da direita: `150000` → `1.500,00`) e guarda um **`number`** no formulário, não a string mascarada. `keyboardType="numeric"` sozinho não formata nada. Ainda não há campo numérico no template — ao precisar do primeiro, crie um `NumberField` em `@/components/form` seguindo o padrão dos outros campos (union controlled/standalone), em vez de mascarar à mão dentro da tela.
+- **Schema:** o campo é `z.number(...)` (o campo entrega número); vazio → `undefined` → o `z.number` acusa "obrigatório". Não use `z.coerce.number()` sobre string mascarada.
+
+#### Erro de campo não desloca componentes vizinhos
+
+Quando um campo exibe mensagem de erro, o `Field` cresce **para baixo** (a mensagem entra abaixo do controle). Numa linha com outros elementos (botão ao lado, campo irmão), isso **não pode empurrar/deslocar os vizinhos**.
+
+- **Linha com campos usa `alignItems: "flex-start"`** — nunca `"flex-end"`/`"center"` numa linha onde algum campo pode exibir erro. `flex-end`/`center` ancoram pelo rodapé/meio, que "desce" quando o erro aparece, arrastando os irmãos junto.
+- **Botão/adorno ao lado de um campo**: alinhe-o ao **controle**, não ao rodapé do campo (que cresce com o erro) — com o label acima, desça o botão pela altura do label em vez de centralizar a linha.
+
+#### Field-arrays grandes: assinaturas ESCOPADAS (nunca `useWatch` no array inteiro)
+
+**Em formulário com `useFieldArray` (lista de linhas, ainda mais se aninhado), NUNCA use `useWatch({ name: "arrayInteiro" })` no componente pai.** Isso assina TODAS as mudanças de QUALQUER campo de QUALQUER linha; digitar uma tecla dispara re-render do pai e, em cascata, de **todas** as linhas — o formulário "trava independente de onde se mexe" (num device isso aparece mais cedo e pior que na web).
+
+- **A lista/estrutura vem do `useFieldArray`** (`fields`) — ele re-renderiza só em mudança **estrutural** (append/remove/move/replace), não a cada tecla. Se o pai precisa de `replace` e um filho precisa de `fields`, pegue ambos do mesmo `useFieldArray` e **passe `fields` como prop** (evite dois `useFieldArray` no mesmo `name`).
+- **Cada linha é um COMPONENTE próprio** (`<Row index={i} />`) que assina só o **seu** estado com ``useWatch({ name: `arr.${i}.campo` })``. Digitar numa linha re-renderiza no máximo aquela linha.
+- **Dados estáticos da linha** (nome, unidade, grupo) saem do `fields[i]`, não de `useWatch`.
+- **Agregados** (ex.: "selecionar todos") assinam só a projeção necessária: ``useWatch({ name: fields.map((_, i) => `arr.${i}.flag`) })`` — não o array inteiro.
+- **Efeito que reage à MUDANÇA de um campo compara com o valor ANTERIOR (ref), nunca um guard "montou".** Sob **StrictMode** o efeito roda 2× no mount e o guard de mount dispara na 2ª passada — sujando o form (`shouldDirty`) e **sobrescrevendo valores carregados**. Use `const prevRef = useRef(campo); useEffect(() => { if (prevRef.current === campo) return; prevRef.current = campo; ... }, [campo])`.
+- **Memoize a linha (`React.memo`) com callbacks ESTÁVEIS** — handlers recebem o índice por parâmetro e são `useCallback` estáveis; `options` memoizadas. Sem isso o `React.memo` não segura (props com identidade nova a cada render) — é a mesma regra de "não passe objeto/função inline" da seção Performance.
+- **Regras de hooks:** todos os `useWatch` da linha vêm ANTES de qualquer `return` condicional.
+
+### Datas
+
+**A natureza do valor decide o tratamento de fuso — e ela é explícita, nunca adivinhada pelo formato da string.**
+
+- **Dia de calendário** — representa um _dia_, sem hora útil (nascimento, vencimento, competência). Grave/exiba **sem fuso** (UTC), pra não "andar" ±1 dia na virada da meia-noite.
+- **Instante** — um _momento_ no tempo (`createdAt`, agendamento com hora). Grave/exiba respeitando o **fuso local** do device.
+- A mesma decisão que rege a **gravação** rege a **exibição**. Misturar (salvar como dia de calendário e exibir como instante) faz o dia pular ±1 — é o bug clássico de data.
+- **Exibição em pt-BR** (`dd/MM/yyyy`), **persistência e query em ISO** (`YYYY-MM-DD` ou ISO completo). Não mande formato local pra API nem jogue ISO cru na tela.
+- **Centralize num utilitário** (`src/lib/date/`) e reaproveite — não espalhe parsing/formatação (nem `date-fns` importado direto) pelas telas. Formato local recebido onde se espera ISO deve **falhar alto**, não virar `Invalid Date` silencioso.
+
 ### Notificações
 
 - `sonner-native`. O `<Toaster />` fica montado no root layout (`src/app/_layout.tsx`), dentro de `GestureHandlerRootView` + `SafeAreaProvider`.
@@ -815,6 +910,7 @@ import { Text } from "@/components/text";
 - ❌ `<Text style={{ fontWeight: "600" }}>` para negritar o corpo → ✓ `<Text weight="semibold">`.
 - ❌ `color: theme.colors.textMuted` no estilo → ✓ `<Text color="muted">`.
 - Faltou um nível na escala? Ajuste os tokens em `unistyles.ts` e mapeie no componente — não invente tamanho solto na tela.
+- **Hierarquia: subtítulo NUNCA maior que o título do container (regra dura).** Dentro de um `Modal`, `Card` ou seção, o **título do container é o maior heading**; todo heading de subseção no corpo é **visualmente menor** que ele — nunca maior. Subtítulo maior inverte a hierarquia e "grita" mais que o título (ex.: um bloco interno em `h1`/`h2` dentro de um modal cujo título é `h3`). Se a subseção parece maior que o título, **reduza a variante da subseção** — não aumente o título. Vale em qualquer nível: sub-subtítulo < subtítulo < título.
 
 ### Cor da marca e tema
 
@@ -874,6 +970,19 @@ Além da marca, o tema traz `border` (traços/divisórias e contorno de card) e 
 **Dark mode em superfícies "card-like"**: use `colors.card` (mais claro que `background` no dark, dando elevação) e remova sombra no dark (sombra não rende em fundo escuro).
 
 O tema é **sempre automático**: `adaptiveThemes: true` segue o tema do sistema (temas precisam se chamar `light` e `dark`). **Não há seletor de tema no app** — não use `initialTheme`, `setTheme` nem `setAdaptiveThemes`; deixe o Unistyles seguir o sistema. (Isso também evita o bug de repaint pela metade que o `setTheme` manual causava numa tela já aberta.)
+
+### Tags e badges — cor semântica vem do tema (regra dura)
+
+Toda tag/pílula (`Badge`, `@/components/badge`) tira a cor de uma **variante semântica**, e a cor de cada variante vive **só** nos tokens do tema (`unistyles.ts`, definidos em light **e** dark). Nunca escreva cor solta na tela (`backgroundColor: "#dcfce7"`, `color: "#b91c1c"`) nem use `variant="default"` (cor cheia da marca) como tag de status.
+
+Mapa de significado (use a variante, não invente cor):
+
+- **`success`** — positivo / ativo / concluído.
+- **`warning`** — atenção / pendência.
+- **`destructive`** — erro / negativo / destrutivo.
+- **`secondary`** e **`outline`** — **neutro**: rótulos e **totalizadores** (contadores/somatórios como "5 registros"). Totalizador **não tem status** → não recebe cor semântica (nada de arco-íris ciclando `success`/`warning`).
+
+Mapa de status→variante que se repete numa tela vive num `Map<string, BadgeVariant>` (sem object-injection — ver Segurança). Ao precisar de um tom novo, **adicione o token no tema (light + dark) e uma variante no `Badge`** — nunca cor solta na tela. O mesmo vale para qualquer outro componente que comunique status.
 
 ### Sempre projete para claro E escuro (obrigatório)
 
