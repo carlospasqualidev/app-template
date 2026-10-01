@@ -1,8 +1,47 @@
 import {
+  clampMonth,
+  getDefaultDateRange,
   isSameDay,
   maskDateDraft,
   parseDateInput,
 } from "@/components/form/datePicker/utils";
+
+describe("getDefaultDateRange", () => {
+  it("vai de 100 anos antes a 50 anos depois do ano atual, inclusive", () => {
+    const { minimumDate, maximumDate } = getDefaultDateRange(
+      new Date(2026, 9, 1),
+    );
+    expect(minimumDate).toEqual(new Date(1926, 0, 1));
+    expect(maximumDate).toEqual(new Date(2076, 11, 31));
+  });
+
+  it("acompanha o ano corrente quando chamado sem argumento", () => {
+    const year = new Date().getFullYear();
+    const { minimumDate, maximumDate } = getDefaultDateRange();
+    expect(minimumDate.getFullYear()).toBe(year - 100);
+    expect(maximumDate.getFullYear()).toBe(year + 50);
+  });
+});
+
+describe("clampMonth", () => {
+  const minimumDate = new Date(1926, 0, 1);
+  const maximumDate = new Date(2076, 11, 31);
+
+  it("mantém o mês dentro da faixa", () => {
+    expect(clampMonth(new Date(2024, 5, 15), minimumDate, maximumDate)).toEqual(
+      new Date(2024, 5, 1),
+    );
+  });
+
+  it("prende o salto de ano nos meses-limite da faixa", () => {
+    expect(clampMonth(new Date(1925, 5, 1), minimumDate, maximumDate)).toEqual(
+      new Date(1926, 0, 1),
+    );
+    expect(clampMonth(new Date(2077, 5, 1), minimumDate, maximumDate)).toEqual(
+      new Date(2076, 11, 1),
+    );
+  });
+});
 
 describe("maskDateDraft", () => {
   it("aplica a máscara DD/MM/AAAA conforme digita", () => {

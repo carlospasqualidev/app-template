@@ -15,6 +15,7 @@ import {
   addMonths,
   buildCalendarDays,
   clampDate,
+  clampMonth,
   isDateDisabled,
   isSameDay,
   startOfDay,
@@ -41,6 +42,15 @@ export function Calendar({
     startOfMonth(clampDate(value ?? new Date(), minimumDate, maximumDate)),
   );
 
+  const canGoBack = !minimumDate || visibleMonth > startOfMonth(minimumDate);
+  const canGoForward = !maximumDate || visibleMonth < startOfMonth(maximumDate);
+
+  function navigate(amount: number) {
+    setVisibleMonth((month) =>
+      clampMonth(addMonths(month, amount), minimumDate, maximumDate),
+    );
+  }
+
   const days = useMemo(() => buildCalendarDays(visibleMonth), [visibleMonth]);
   const monthLabel = useMemo(() => {
     const label = new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(
@@ -56,14 +66,16 @@ export function Calendar({
           <Button
             variant="ghost"
             size="icon"
-            onPress={() => setVisibleMonth((month) => addMonths(month, -12))}
+            disabled={!canGoBack}
+            onPress={() => navigate(-12)}
           >
             <ChevronsLeft size={18} color={theme.colors.textForeground} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            onPress={() => setVisibleMonth((month) => addMonths(month, -1))}
+            disabled={!canGoBack}
+            onPress={() => navigate(-1)}
           >
             <ChevronLeft size={18} color={theme.colors.textForeground} />
           </Button>
@@ -82,14 +94,16 @@ export function Calendar({
           <Button
             variant="ghost"
             size="icon"
-            onPress={() => setVisibleMonth((month) => addMonths(month, 1))}
+            disabled={!canGoForward}
+            onPress={() => navigate(1)}
           >
             <ChevronRight size={18} color={theme.colors.textForeground} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            onPress={() => setVisibleMonth((month) => addMonths(month, 12))}
+            disabled={!canGoForward}
+            onPress={() => navigate(12)}
           >
             <ChevronsRight size={18} color={theme.colors.textForeground} />
           </Button>

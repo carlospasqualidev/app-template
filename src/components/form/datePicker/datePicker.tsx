@@ -15,6 +15,7 @@ import { Calendar } from "./calendar";
 import {
   type DateMode,
   formatValue,
+  getDefaultDateRange,
   isDateDisabled,
   maskDateDraft,
   mergeTime,
@@ -31,15 +32,28 @@ export interface IDatePickerProps {
   placeholder?: string;
   disabled?: boolean;
   hasError?: boolean;
+  /** Default: 1º/jan de (ano atual - 100). */
   minimumDate?: Date;
+  /** Default: 31/dez de (ano atual + 50). */
   maximumDate?: Date;
 }
 
-export function DatePicker({ mode = "date", ...props }: IDatePickerProps) {
+export function DatePicker({
+  mode = "date",
+  minimumDate,
+  maximumDate,
+  ...props
+}: IDatePickerProps) {
+  const defaultRange = getDefaultDateRange();
+  const range = {
+    minimumDate: minimumDate ?? defaultRange.minimumDate,
+    maximumDate: maximumDate ?? defaultRange.maximumDate,
+  };
+
   if (mode === "date") {
-    return <DateInput {...props} />;
+    return <DateInput {...props} {...range} />;
   }
-  return <NativeDateTimeInput mode={mode} {...props} />;
+  return <NativeDateTimeInput mode={mode} {...props} {...range} />;
 }
 
 type DateInputProps = Omit<IDatePickerProps, "mode">;

@@ -128,6 +128,39 @@ export function clampDate(
   return value;
 }
 
+const DEFAULT_YEARS_BEFORE = 100;
+const DEFAULT_YEARS_AFTER = 50;
+
+export interface IDateRange {
+  minimumDate: Date;
+  maximumDate: Date;
+}
+
+/** Faixa padrão do seletor: de 1º/jan de (ano atual - 100) a 31/dez de (ano atual + 50). */
+export function getDefaultDateRange(today: Date = new Date()): IDateRange {
+  const year = today.getFullYear();
+  return {
+    minimumDate: new Date(year - DEFAULT_YEARS_BEFORE, 0, 1),
+    maximumDate: new Date(year + DEFAULT_YEARS_AFTER, 11, 31),
+  };
+}
+
+/** Mantém o mês visível do calendário dentro dos meses de `minimumDate`/`maximumDate`. */
+export function clampMonth(
+  month: Date,
+  minimumDate?: Date,
+  maximumDate?: Date,
+): Date {
+  const target = startOfMonth(month);
+  if (minimumDate && target < startOfMonth(minimumDate)) {
+    return startOfMonth(minimumDate);
+  }
+  if (maximumDate && target > startOfMonth(maximumDate)) {
+    return startOfMonth(maximumDate);
+  }
+  return target;
+}
+
 export function buildCalendarDays(month: Date): ICalendarDay[] {
   const currentMonth = startOfMonth(month);
   const startWeekday = currentMonth.getDay();
