@@ -2,7 +2,7 @@
 
 Template de aplicativo **React Native + Expo** (SDK 56, New Architecture) reutilizável entre projetos, partindo do zero — sem biblioteca de UI, com componentes próprios.
 
-> A fonte de verdade de convenções e comportamento é o [`CLAUDE.md`](CLAUDE.md). Leia-o antes de contribuir.
+> A fonte de verdade de convenções e comportamento é o [`CLAUDE.md`](CLAUDE.md), com os guias de referência em [`docs/`](docs/): [Definition of Done](docs/definition-of-done.md), [guardrails](docs/guardrails.md), [convenções](docs/conventions.md) e [testes](docs/testing-guide.md). Leia-o antes de contribuir.
 
 ## Stack
 
@@ -65,7 +65,7 @@ unistyles.ts     # tema (cores, tipografia, breakpoints)
 - **Token de sessão em `expo-secure-store`** (nunca `AsyncStorage`).
 - **UI em pt-BR**, código em inglês. Suporte a **claro e escuro** é obrigatório em todo componente/tela.
 
-Detalhes completos (a11y, LGPD/PII, performance, object injection, etc.) no [`CLAUDE.md`](CLAUDE.md).
+Detalhes completos (a11y, LGPD/PII, performance, object injection, etc.) no [`CLAUDE.md`](CLAUDE.md); rotas, HTTP, formulários, componentes e tema em [`docs/conventions.md`](docs/conventions.md); testes em [`docs/testing-guide.md`](docs/testing-guide.md).
 
 ## Builds (EAS)
 

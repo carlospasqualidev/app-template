@@ -2,6 +2,8 @@
 
 Fluxos de ponta a ponta que exercitam o app real (modo fake de sessão, sem backend).
 
+Quando rodar e como reportar: [`docs/definition-of-done.md`](../docs/definition-of-done.md#fechamento). Como escrever testes: [`docs/testing-guide.md`](../docs/testing-guide.md).
+
 ## Pré-requisitos
 
 1. **Java JDK 11+** e **adb** (Android SDK) no PATH.
