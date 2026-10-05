@@ -343,7 +343,7 @@ toast.info("Sincronização em andamento.", {
 
 ## Componentes (`components/`)
 
-Não usamos biblioteca de UI. O padrão é **componentes próprios dentro do projeto**, construídos sobre **rn-primitives** (comportamento/a11y) e estilizados com **Unistyles** (`StyleSheet` + variantes).
+Não usamos biblioteca de UI. O padrão é **componentes próprios dentro do projeto**, que cuidam do próprio comportamento e da a11y (props `accessibility*` do RN; **rn-primitives** só no checkbox) e são estilizados com **Unistyles** (`StyleSheet` + variantes).
 
 - **Camada única.** Como você é dono do componente desde o primitivo até o estilo, o componente já é a abstração — não há split entre "primitivo cru" e "wrapper".
 - Estilo sempre via Unistyles (`StyleSheet.create((theme) => ({...}))` + `variants`). Combine estilos com array (`style={[styles.base, styles.active]}`), não com merge de classes.
@@ -353,7 +353,7 @@ Não usamos biblioteca de UI. O padrão é **componentes próprios dentro do pro
 **Padrão para criar um componente:**
 
 - Pasta `components/<nome>/<nome>.tsx`, export nomeado, interface prefixada com `I`.
-- Importe o primitivo do rn-primitives como `XPrimitive` (ex.: `Root as DialogPrimitive`) para evitar shadowing.
+- Se o componente usar um primitivo do rn-primitives (hoje só o checkbox, com `import * as CheckboxPrimitive from "@rn-primitives/checkbox"`), importe-o como `XPrimitive` para evitar shadowing.
 - API minimalista: props essenciais obrigatórias, extras opcionais.
 - **Teste cobrindo o contrato público** (estados, props obrigatórias, handlers).
 - Para componentes de formulário ou "abre/fecha", espelhe o padrão controlled/uncontrolled via discriminated union. Discrimine via `'prop' in props` — nunca via `prop !== undefined`. Quando uma variante declarar `prop?: never`, encapsule num **type guard** com type predicate:

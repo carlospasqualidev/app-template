@@ -8,7 +8,7 @@ Template de aplicativo **React Native + Expo** (SDK 56, New Architecture) reutil
 
 - **Expo Router** (rotas file-based) + **TanStack Query** (server state)
 - **Zustand** (client state global) • **React Hook Form + Zod** (formulários)
-- **Unistyles** (estilo com tema/variantes, claro + escuro automático) + **rn-primitives** (a11y)
+- **Unistyles** (estilo com tema/variantes, claro + escuro automático) + a11y nos próprios componentes (props `accessibility*` do RN; **rn-primitives** só no checkbox)
 - **Axios** (cliente HTTP com interceptors) • **sonner-native** (toast)
 - **Jest + React Native Testing Library** (unit/integração) • **Maestro** (E2E)
 - ESLint (`eslint-config-expo` + `eslint-plugin-security`) + Prettier + Husky + lint-staged
@@ -47,9 +47,9 @@ O `pre-commit` roda ESLint + Prettier nos arquivos staged; o `pre-push` roda typ
 ```
 src/
 ├── app/         # Expo Router — rotas finas ((auth) público, (app) protegido)
-├── components/  # componentes próprios (rn-primitives + Unistyles); form/ agrupa o kit
+├── components/  # componentes próprios (Unistyles; rn-primitives só no checkbox); form/ agrupa o kit
 ├── hooks/       # hooks reutilizáveis
-├── lib/         # utilidades puras (env, queryClient, toast)
+├── lib/         # utilidades puras (env, queryClient, toast, getInitials)
 ├── screens/     # implementação das telas (uma pasta por feature)
 ├── services/    # api/ (cliente) + <módulo>/ (chamadas + schemas Zod)
 ├── stores/      # Zustand (sessão)
