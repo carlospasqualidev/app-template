@@ -8,7 +8,7 @@ Escopado no que a mudança tocou. Tudo verde antes de passar adiante; erro que n
 
 1. **Typecheck**: `npm run typecheck` (`tsc --noEmit`, cobre o app inteiro; `src/tests/` fica fora do `tsc` e é coberto pelo Jest).
 2. **Lint** dos arquivos tocados: `npx eslint <arquivos ou pastas>` (ex.: `npx eslint src/components/button`). O `npm run lint` (`expo lint`) roda o projeto todo.
-3. **Testes Jest da área tocada**: `npx jest <caminho>` filtra por arquivo ou pasta de teste (ex.: `npx jest src/tests/components/button`); `npx jest -t "<nome do teste>"` filtra por nome. Lógica não-trivial e componente reutilizável alterados ganham ou atualizam teste junto (ver [`testing-guide.md`](testing-guide.md)).
+3. **Testes Jest da área tocada**: `npm run test:related` é o padrão: roda só os testes afetados pelas mudanças não commitadas e inclui os testes de quem importa o arquivo alterado. 0 testes ou "No tests found" não é verde: depois do commit, use `npx jest --findRelatedTests <arquivos>`; mudança em `jest.config.js`, `src/tests/setup.ts` ou `package.json` exige `npm test`; em mudança sem código (só documentação), reporte `test:related 0/0 (só docs)`. Alternativas para iterar: `npx jest <caminho>` filtra por arquivo ou pasta de teste (ex.: `npx jest src/tests/components/button`), `npx jest -t "<nome do teste>"` filtra por nome, e `npx jest --findRelatedTests <arquivos>` pega os afetados por arquivos já commitados. Lógica não-trivial e componente reutilizável alterados ganham ou atualizam teste junto (ver [`testing-guide.md`](testing-guide.md)).
 4. **Documentação acompanha a mudança** (abaixo).
 
 ### Documentação acompanha a mudança
@@ -51,6 +51,6 @@ Placar medido, não estimado, no formato curto:
 
 - `check N/N` — testes Jest passando sobre o total da linha `Tests:` do `npm run check`, com lint e typecheck verdes (ex.: `check 120/120`).
 - `maestro X/X` — fluxos passando sobre fluxos rodados, com o device/emulador e o build usados; ou `maestro não rodou` com o motivo (ex.: entrega só de documentação).
-- No loop, dizer qual filtro rodou (`npx jest <caminho>`, `npx eslint <arquivos>`).
+- No loop, dizer qual filtro rodou (`npm run test:related`, `npx jest <caminho>`, `npx eslint <arquivos>`) e o placar N/N da linha `Tests:` dele, inclusive do `npm run test:related` (ex.: `test:related 32/32`); um `0/0` ou "No tests found" aparece no relatório e não conta como verde (só documentação: `test:related 0/0 (só docs)`).
 - O que foi verificado à mão (tela aberta no dev build, temas claro e escuro), em uma linha.
 - Falha que ficou: o erro em uma linha, como pendência.

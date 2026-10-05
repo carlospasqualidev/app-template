@@ -64,6 +64,7 @@
     "typecheck": "tsc --noEmit",
     "upgrade": "npx expo install --fix && npx expo-doctor && expo run:android -c",
     "test": "jest",
+    "test:related": "jest --onlyChanged",
     "test:watch": "jest --watch",
     "test:e2e": "maestro test .maestro",
     "format": "prettier --write .",

@@ -28,16 +28,17 @@ A sessão vem em **modo fake** (aceita qualquer credencial) — veja como plugar
 
 ## Scripts
 
-| Comando             | O que faz                                        |
-| ------------------- | ------------------------------------------------ |
-| `npm run go`        | Inicia o Metro (`expo start`)                    |
-| `npm run dev`       | Gera e roda o dev build Android                  |
-| `npm run lint`      | ESLint                                           |
-| `npm run typecheck` | `tsc --noEmit`                                   |
-| `npm test`          | Jest                                             |
-| `npm run check`     | lint + typecheck + test (rode antes de empurrar) |
-| `npm run test:e2e`  | Maestro (precisa do CLI — ver `.maestro/README`) |
-| `npm run format`    | Prettier                                         |
+| Comando                | O que faz                                                 |
+| ---------------------- | --------------------------------------------------------- |
+| `npm run go`           | Inicia o Metro (`expo start`)                             |
+| `npm run dev`          | Gera e roda o dev build Android                           |
+| `npm run lint`         | ESLint                                                    |
+| `npm run typecheck`    | `tsc --noEmit`                                            |
+| `npm test`             | Jest                                                      |
+| `npm run test:related` | Jest só nos testes afetados pelas mudanças não commitadas |
+| `npm run check`        | lint + typecheck + test (rode antes de empurrar)          |
+| `npm run test:e2e`     | Maestro (precisa do CLI — ver `.maestro/README`)          |
+| `npm run format`       | Prettier                                                  |
 
 O `pre-commit` roda ESLint + Prettier nos arquivos staged; o `pre-push` roda typecheck + test.
 
