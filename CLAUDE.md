@@ -4,13 +4,19 @@ Guia para o Claude trabalhar neste app mobile. Este arquivo traz as regras gerai
 
 > Este é um **template de aplicativo** reutilizável entre projetos, partindo praticamente do zero. Não assuma uma biblioteca de componentes pronta: o que não existir ainda, você cria seguindo as regras abaixo e os Guias de referência. Mantenha tudo genérico e reaproveitável — nada de regra de negócio de um cliente específico vazando para a base do template.
 
+> Verificar: possivelmente desatualizado — o template já traz um kit de componentes em `src/components/` (`button`, `card`, `modal`, `form/` e outros; lista em `docs/conventions.md:387`), então “partindo praticamente do zero” e “não assuma uma biblioteca de componentes pronta” não batem com o código; ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 2.
+
 ---
 
 ## Stack
 
 React Native + Expo (SDK 56, New Architecture) + TypeScript • Expo Router (file-based) + TanStack Query • Zustand • React Hook Form + Zod • Unistyles + rn-primitives (componentes próprios) • Axios • toast (`sonner-native`) • Jest + React Native Testing Library + Maestro (E2E) • ESLint (`eslint-config-expo`) + Prettier + Husky + lint-staged.
 
+> Verificar: possivelmente desatualizado — de rn-primitives só `@rn-primitives/checkbox` está instalado (`package.json:9`); o `Modal` é uma sheet sobre o `Modal` nativo, não rn-primitives (`docs/conventions.md:377`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 3.
+
 Estilo via **Unistyles** (`StyleSheet` nativo com tema/variantes), nunca `className`/Tailwind. Acessibilidade e comportamento dos componentes via **rn-primitives**. O app roda em **development build** (EAS ou `expo run:android`), **não** em Expo Go — Unistyles tem código nativo.
+
+> Verificar: possivelmente desatualizado — “acessibilidade e comportamento via rn-primitives” hoje vale só para o checkbox (`package.json:9`; `Modal` sem rn-primitives em `docs/conventions.md:377`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 3.
 
 Autenticação por **token** guardado em `expo-secure-store` (nunca em `AsyncStorage`), enviado via header `Authorization`.
 
@@ -45,10 +51,18 @@ Se uma mudança ameaça introduzir instabilidade, inconsistência ou complexidad
 Para decisões de UX, layout ou organização de tela, siga esta ordem:
 
 1. **Procure primeiro no próprio projeto.** Antes de inventar, varra `src/screens/` e `src/components/` atrás de algo equivalente já criado. Replique pasta, abstração e cadência visual que já existem. Padronização interna **sempre** vence preferência individual — uma tela nova deve parecer parte do sistema, não um experimento isolado.
-2. **Quando não houver referência interna, inspire-se em sistemas mobile consolidados** e nas diretrizes de plataforma (Material Design 3 no Android, Human Interface Guidelines no iOS) e em apps de referência (Linear, Things, Stripe, Notion mobile). Use-os para preencher lacunas — _como_ organizam navegação por abas, _onde_ colocam a ação primária (FAB, header, bottom bar), _como_ tratam listas longas e pull-to-refresh. Adapte para os padrões deste projeto; não traga estrutura paralela de fora quando já existe um padrão interno.
-3. **Se a decisão vai virar padrão para outras telas, documente.** Quando você introduz uma convenção que se repetirá, registre brevemente em `CLAUDE.md` (regra geral) ou no guia de `docs/` do assunto (ver Guias de referência) para que a próxima sessão (humana ou Claude) já chegue alinhada.
+2. **Sem referência interna, inspiração externa:** diretrizes de plataforma e apps mobile de referência, adaptados aos padrões deste projeto — detalhe em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md), seção Inspirações de design e organização.
+3. **Se a decisão vai virar padrão para outras telas, documente.** Quando você introduz uma convenção que se repetirá, registre brevemente onde manda a seção [Onde registrar convenção nova](#onde-registrar-convenção-nova) para que a próxima sessão (humana ou Claude) já chegue alinhada.
 
 Resumo: **consistência interna > inspiração externa > improvisar do zero.**
+
+---
+
+## Onde registrar convenção nova
+
+- Convenção de uma área vai para o `docs/claude/<área>.md` dela: UI, telas, a11y, loading e texto em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md); object injection e PII em [`docs/claude/seguranca.md`](docs/claude/seguranca.md); estrutura de pastas em [`docs/claude/referencia.md`](docs/claude/referencia.md). Convenção de um assunto que já tem guia em `docs/` (ex.: rota, API, formulário, data, toast, componente, tema, teste) vai para esse guia (ver Guias de referência).
+- Neste `CLAUDE.md` só entra regra que vale para quase toda tarefa, em versão curta que termina apontando o arquivo de área do detalhe. Regra de segurança ou de dado pessoal nunca fica só na área.
+- Área nova ganha arquivo novo em `docs/claude/`, com o cabeçalho dos outros, e uma linha na tabela de Guias de referência e no índice do fim deste arquivo.
 
 ---
 
@@ -71,6 +85,9 @@ O que torna uma tarefa e uma entrega prontas (loop por tarefa, fechamento, como 
 | [`docs/conventions.md#componentes-components`](docs/conventions.md#componentes-components) | Antes de criar componente, modal ou confirmação |
 | [`docs/conventions.md#tipografia`](docs/conventions.md#tipografia) | Ao renderizar texto |
 | [`docs/conventions.md#cor-da-marca-e-tema`](docs/conventions.md#cor-da-marca-e-tema) e seguintes | Ao usar cor, raio, badge ou tema claro/escuro |
+| [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md) | Ao criar ou mudar tela, componente, estado de carregamento, layout responsivo, texto de interface ou a11y de componente novo (exemplo de JSX, acentuação, foco de modal, toast, skeleton) |
+| [`docs/claude/seguranca.md`](docs/claude/seguranca.md) | Ao indexar objeto/array por chave que não é literal, ao ver o aviso `security/detect-object-injection`, ao logar erro de API ou ao tratar dado pessoal (log, toast, params de rota/deep link, `defaultValues`, mock, fixture) |
+| [`docs/claude/referencia.md`](docs/claude/referencia.md) | Ao procurar onde fica uma pasta de `src/` ou onde criar um arquivo novo |
 
 ---
 
@@ -119,62 +136,7 @@ O que torna uma tarefa e uma entrega prontas (loop por tarefa, fechamento, como 
 
 Você tende a empilhar `<View>` e estilos a mais. **Pare**. Cada elemento e cada estilo precisa pagar pelo seu lugar. JSX limpo é fundamental — quem lê depois (humano ou Claude) entende a intenção pelo formato, não escava entre wrappers.
 
-### Antes de adicionar uma `<View>`, pergunte
-
-1. Existe pra layout real (flex/spacing/posição)? Mantenha.
-2. Existe pra agrupar um nó acessível (`accessible`, `accessibilityRole`)? Mantenha com o papel certo.
-3. Existe só pra agrupar JSX? Troque por **Fragment** (`<>...</>`).
-4. Existe só pra aplicar um estilo num filho? Passe o estilo pro filho direto.
-
-Se a resposta não é #1 ou #2, a `View` não deveria estar lá. Lembre que **React Native não tem HTML semântico** (`section`, `header`, etc.) — a semântica vem de `accessibilityRole`, não de uma tag.
-
-### Regras
-
-- **Reuse componentes que você já criou** em vez de recriar a mesma estrutura com `View` e estilos soltos. Se um padrão aparece em duas telas, promova a um componente reutilizável.
-- **Não empilhe wrappers de layout**: um `View` com `flex` geralmente basta. `<View flex><View flex>` é code smell.
-- **Sem estilo redundante**: nada de repetir `flexDirection: 'column'` (default do RN), largura/altura que o flex já resolve, ou cor de texto que já é o default do tema.
-- **Prefira tokens do tema a número mágico.** Espaçamentos, cores, tipografia e **raio/curvatura** vêm do tema do Unistyles (`theme.gap(n)`, `theme.colors.*`, `theme.radius.*`), não de valores cravados no componente. Valor solto descalibra o ritmo visual entre telas.
-  - ❌ `padding: 13` · `marginTop: 7` · `color: '#6b7280'`
-  - ✓ `padding: theme.gap(2)` · `marginTop: theme.gap(1)` · `color: theme.colors.textMuted`
-- **Prefira estilo no elemento certo**, não num wrapper criado pra isso. Se precisa de margem num botão, ajuste o `gap` do pai ou o estilo do próprio botão.
-- **Texto sempre dentro de `<Text>`.** String solta dentro de `<View>` quebra no RN.
-- **Não comente o que o JSX já diz.** Componente bem nomeado dispensa `{/* Header */}` em cima de `<Header />`.
-
-### Exemplo
-
-❌ Excesso de wrappers e estilos redundantes:
-
-```tsx
-<View style={{ flexDirection: "column", gap: 16 }}>
-  <View>
-    <View style={{ flexDirection: "row", alignItems: "center" }}>
-      <Text style={{ fontSize: 18, color: "#111" }}>Resumo</Text>
-    </View>
-    <View style={{ marginTop: 8 }}>
-      <Text style={{ fontSize: 14, color: "#6b7280" }}>Visão do dia.</Text>
-    </View>
-  </View>
-  <View>
-    <Button onPress={save}>Salvar</Button>
-  </View>
-</View>
-```
-
-✓ Enxuto e legível:
-
-```tsx
-<View style={styles.section}>
-  <Text style={styles.title}>Resumo</Text>
-  <Text style={styles.muted}>Visão do dia.</Text>
-  <Button onPress={save}>Salvar</Button>
-</View>;
-
-const styles = StyleSheet.create((theme) => ({
-  section: { gap: theme.gap(2) },
-  title: { ...theme.typography.h3 },
-  muted: { color: theme.colors.textMuted },
-}));
-```
+Uma `<View>` só fica se faz layout real (flex/spacing/posição) ou agrupa um nó acessível com o papel certo; senão, Fragment ou estilo direto no filho. Reuse componente, sem wrapper empilhado nem estilo redundante, tokens do tema (`theme.gap(n)`, `theme.colors.*`, `theme.radius.*`) em vez de número mágico, texto sempre dentro de `<Text>` — detalhe em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md).
 
 ---
 
@@ -196,72 +158,8 @@ const styles = StyleSheet.create((theme) => ({
 - Nunca confie em dado vindo do servidor sem tipá-lo — defina o shape esperado.
 - Não logue dados sensíveis (senhas, tokens, dados pessoais) — nem em `console.log` durante desenvolvimento.
 - **Não armazene tokens/segredos em `AsyncStorage`** (não criptografado). Use `expo-secure-store` para token de sessão, refresh token e qualquer credencial. `AsyncStorage`/`MMKV` só para dado não-sensível (preferências, cache de UI).
-
-### Object injection — nunca indexe objeto/array com variável
-
-Indexar `obj[key]` / `arr[i]` quando a chave é uma **variável** (e não um literal) é risco real: se a chave vier (direta ou indiretamente) de input do usuário, pode resolver para `__proto__` / `constructor` / `prototype` e abrir caminho para _prototype pollution_, ou ler/escrever uma propriedade que você não pretendia expor. (Com `eslint-plugin-security` configurado, isso vira o aviso **"Variable Assigned to Object Injection Sink"** — não silencie, refatore.)
-
-**Regra dura: objeto indexado por variável dinâmica é proibido.** Só é aceitável quando a chave é um **literal conhecido em tempo de compilação**.
-
-Como evitar, por caso de uso:
-
-- **Mapa de lookup (label/variante por chave de union)** — em vez de `Record` indexado por variável, use um `Map` (`.get()` não é sink) ou um `switch`:
-
-  ❌ Inseguro:
-
-  ```ts
-  const ROLE_VARIANT: Record<UserRole, Variant> = {
-    admin: "default",
-    member: "secondary",
-  };
-  const variant = ROLE_VARIANT[role];
-  ```
-
-  ✓ `Map` com `.get()`:
-
-  ```ts
-  const roleVariant = new Map<UserRole, Variant>([
-    ["admin", "default"],
-    ["member", "secondary"],
-  ]);
-  const variant = roleVariant.get(role);
-  ```
-
-  ✓ ou `switch` (bom quando há lógica além do lookup):
-
-  ```ts
-  function roleVariant(role: UserRole): Variant {
-    switch (role) {
-      case "admin":
-        return "default";
-      case "member":
-        return "secondary";
-    }
-  }
-  ```
-
-- **Chave vinda de input do usuário** (params de rota, deep link, body): nunca indexe direto. Valide com `z.enum([...])` para garantir que a chave é uma das esperadas **antes** de qualquer acesso, e então use `Map`/`switch`.
-- **Iteração por índice numérico**: prefira `for...of`, `.map`, `.find`, `.at(i)` — o callback do `.map((item, i) => ...)` já entrega o `item` sem você indexar o array. Só caia em `arr[i]` quando `i` for literal.
-
-Resumo: lookup por chave → `Map`/`switch`; iteração → métodos de array; chave de fonte externa → Zod antes de tudo.
-
-### LGPD e dados pessoais (PII)
-
-Produto pt-BR opera sob a LGPD. Considere PII e **proibido logar** em qualquer canal (console, Sentry/breadcrumb, analytics, params de deep link/rota, body de erro exibido ao usuário, payload de toast):
-
-- **Identificadores pessoais**: nome completo, CPF, CNPJ (de pessoa física), RG, CNH, passaporte, título de eleitor, PIS.
-- **Contato**: e-mail, telefone, endereço, CEP.
-- **Credenciais e sessão**: senha (em qualquer forma — texto puro, hash, parcial), token de API, código 2FA, perguntas de recuperação.
-- **Financeiro**: número de cartão (mesmo mascarado), CVV, dados bancários, conta, chave PIX.
-- **Sensíveis (art. 5º, II)**: dados de saúde, biometria, origem racial, religião, opinião política, orientação sexual.
-
-Regras práticas:
-
-- **Erros de API**: a camada de rede já exibe mensagem amigável — não relogue o objeto de erro cru no `console.error` de produção. Em dev, OK, desde que o `.env.local` não vá pro repo.
-- **Params de deep link/rota nunca levam PII** (aparecem em logs, histórico de navegação, analytics de tela). Use ID opaco na rota (`/users/abc123`), nunca CPF; dado sensível vai no body de uma chamada autenticada.
-- **Toast/erro ao usuário não ecoa o input**: `"Falha ao salvar."` em vez de `"Falha ao salvar o usuário ${nome} (CPF ${cpf})."`.
-- **Form com PII** (cadastro, perfil): garanta que `defaultValues` de exemplo não foram commitados com dado real.
-- **Mocks e fixtures**: dados de exemplo são fictícios — não cole CPF/e-mail real "porque é só pra testar".
+- **Object injection:** nunca indexe objeto/array com chave que não seja literal conhecido em tempo de compilação, nem silencie `security/detect-object-injection`; lookup por chave vai em `Map.get()` ou `switch`, iteração em `for...of`/`.map`/`.find`/`.at(i)`, e chave de input externo (params de rota, deep link, body) passa por `z.enum([...])` antes de qualquer acesso — detalhe em [`docs/claude/seguranca.md`](docs/claude/seguranca.md).
+- **LGPD e PII:** identificadores pessoais, contato, credenciais e sessão, dado financeiro e dado sensível nunca vão a log (console, Sentry/breadcrumb, analytics), params de rota/deep link, body de erro exibido nem toast; a rota leva ID opaco, o toast não ecoa o input, e `defaultValues`, mocks e fixtures usam dado fictício. Erro de API: a camada de rede já exibe a mensagem amigável, e o objeto de erro cru não é relogado no `console.error` de produção (em dev, OK, desde que o `.env.local` não vá pro repo) — detalhe em [`docs/claude/seguranca.md`](docs/claude/seguranca.md).
 
 ---
 
@@ -306,49 +204,19 @@ Todo texto exposto ao usuário em **português brasileiro (pt-BR)**.
 
 ### Acentuação e codificação (evitar mojibake)
 
-**Sempre acentue corretamente.** Texto pt-BR sem acento é erro, não estilo — `usuario`, `nao`, `acao`, `informacoes` viram bug visível para o usuário final. Mesmo em rascunho, mantenha `usuário`, `não`, `ação`, `informações`.
-
-- **Salve arquivos em UTF-8 sem BOM.** Strings literais (`'Não foi possível salvar.'`), comentários, labels, mensagens de erro de schema Zod, tudo em UTF-8 correto.
-- **Mojibake é zero-tolerância.** Se você ver `não`, `Ã§`, `Ã©`, `â€"`, `?` no lugar de letra acentuada, ou caracteres invertidos `Â`, `Ã`, isso é arquivo lido como Latin-1/CP1252 e escrito como UTF-8 (ou vice-versa). Conserte o arquivo (re-salve em UTF-8) — **não "corrija" o texto trocando por versão sem acento.**
-- **No PowerShell (Windows), nunca redirecione texto pt-BR com `>` ou `Out-File` sem `-Encoding utf8`** — o default vira UTF-16 LE com BOM e quebra o build/leitura. Para escrever texto com acento via shell, use as ferramentas de edição de arquivo, não `echo "..." > arquivo`.
-- **Caracteres comuns que precisam aparecer corretos**: `á é í ó ú â ê ô ã õ à ç` (minúsculas) e suas maiúsculas. Aspas tipográficas e travessão (`—`) também são UTF-8 — preserve.
-- **Lista mínima de palavras que aparecem direto no produto e precisam estar acentuadas**: ação, não, número, código, válido/inválido, próximo/anterior, página, último, índice, descrição, padrão, série, área, é/está, mês, três, após, até, já, só.
-- **Atalhos automáticos do editor** (autocorreção, configuração regional do shell) são fonte recorrente de regressão. Se você notar um arquivo onde acento sumiu silenciosamente, re-salve em UTF-8 antes de continuar editando.
-
-❌ `<Empty title="Nenhum usuario encontrado" />`
-✓ `<Empty title="Nenhum usuário encontrado" />`
-
-❌ `z.string().min(1, 'Campo obrigatorio.')`
-✓ `z.string().min(1, 'Campo obrigatório.')`
+Sempre acentue o texto pt-BR; arquivos em UTF-8 sem BOM; mojibake é zero-tolerância e se conserta re-salvando o arquivo em UTF-8, nunca trocando por versão sem acento; no PowerShell, nada de `>` ou `Out-File` sem `-Encoding utf8` com texto pt-BR (use as ferramentas de edição) — detalhe em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md).
 
 ---
 
 ## Acessibilidade (a11y)
 
-rn-primitives dá a base de a11y — papéis, estados e gestos. As regressões comuns vêm de **remover/ignorar** o que ele entrega, ou de construir interativo com `View` crua. As regras abaixo são o mínimo para uma tela nova não degradar.
-
-- **Toda input precisa de label associada** (`accessibilityLabel` ou label visível ligada ao campo). **Não use `placeholder` como label** — placeholder some quando o usuário começa a digitar e o leitor de tela não o trata como rótulo.
-- **Elemento interativo é `Pressable`/botão, nunca `View` com `onPress`.** `View` clicável não tem `accessibilityRole="button"`, não é anunciada como botão e não responde a tecnologias assistivas. Use `Pressable` com `accessibilityRole`.
-- **Botão-ícone exige `accessibilityLabel` em pt-BR**: ex. um botão de fechar com só um ícone precisa de `accessibilityLabel="Fechar"`. Sem isso, o leitor de tela anuncia "botão" sem dizer o quê.
-- **Imagens informativas precisam de `accessibilityLabel`** (curto, pt-BR). Imagem puramente decorativa: `accessible={false}`.
-- **Contraste mínimo de 4.5:1** para texto sobre fundo (WCAG AA). Os tokens do tema (`textForeground` sobre `background`, `textMuted` sobre `card`) já passam — desvio só com motivo claro.
-- **Estado comunicado via `accessibilityState`** (`{ disabled, selected, checked, busy }`), não só visualmente.
-- **Foco em modal/drawer**: marque o container modal com `accessibilityViewIsModal` (iOS) e mande o foco do leitor para o título/primeiro campo com `AccessibilityInfo.setAccessibilityFocus`. Em confirmação destrutiva, o foco inicial **não** fica no botão de confirmar (evita confirmação acidental).
-- **Toasts**: anuncie via `AccessibilityInfo.announceForAccessibility` ou `accessibilityLiveRegion="polite"` (Android) para que o leitor leia a mensagem.
-- **Esconder do leitor de tela**: use `accessibilityElementsHidden` (iOS) + `importantForAccessibility="no-hide-descendants"` (Android), ou `accessible={false}`. Para esconder de todos, não renderize.
-- **Animação respeita redução de movimento**: cheque `AccessibilityInfo.isReduceMotionEnabled()` ou use `useReducedMotion()` do Reanimated e reduza/elimine a animação quando ativo.
-- **Alvo de toque mínimo de 44×44 pt.** Use `hitSlop` quando o visual for menor.
+Toda input com label associada (`placeholder` não é label); interativo é `Pressable` com `accessibilityRole`, nunca `View` com `onPress`; botão-ícone e imagem informativa com `accessibilityLabel` em pt-BR; contraste mínimo de 4.5:1; estado via `accessibilityState`; alvo de toque mínimo de 44×44 pt. Foco em modal, toast, esconder do leitor de tela e redução de movimento também têm regra — detalhe em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md).
 
 ---
 
 ## Adaptação a tamanhos de tela e orientação
 
-**Não esconda conteúdo por não caber.** Quando algo não cabe na largura, a solução é **scroll** (vertical na tela, horizontal num container específico) ou **reflow** — não suprimir informação.
-
-- **Respeite a safe area** (`react-native-safe-area-context`) para não ficar sob notch, status bar ou home indicator. Não chumbe `paddingTop` mágico.
-- **Conteúdo que pode estourar a altura vai em `ScrollView`/`FlashList`.** Formulário longo precisa rolar e respeitar o teclado (`KeyboardAvoidingView` / `keyboardShouldPersistTaps`).
-- **Conteúdo largo**: container com `ScrollView horizontal` em vez de cortar partes.
-- **Tablet e landscape**: use os **breakpoints do Unistyles** (`xs:0, sm, md, lg, xl`) para adaptar layout, não condicional manual com `Dimensions`.
+Não esconda conteúdo por não caber: scroll ou reflow. Respeite a safe area, ponha conteúdo alto em `ScrollView`/`FlashList` respeitando o teclado e adapte tablet e landscape pelos breakpoints do Unistyles, não por `Dimensions` — detalhe em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md).
 
 ---
 
@@ -356,48 +224,22 @@ rn-primitives dá a base de a11y — papéis, estados e gestos. As regressões c
 
 **Não substitua a tela por um spinner gigante nem por um skeleton genérico.** Quando algo está carregando, monte a **estrutura final da tela primeiro** e troque **apenas o dado que muda** por skeleton. Cabeçalhos, rótulos, ações, abas, navegação — tudo que não muda entre vazio e preenchido continua **visível e interativo**.
 
-### Por quê
-
-Spinner gigante centralizado no lugar do conteúdo atrasa a percepção do que a tela é, esconde a navegação contextual e provoca _layout shift_ quando o conteúdo aparece. Skeleton localizado onde o dado entra deixa o usuário entender a tela antes dos dados, mantém a UI interativa ao redor e reserva o espaço final (sem salto visual).
-
-### Padrões corretos
-
-- **Lista (`FlashList`) carregando:** header, filtros e ações **continuam visíveis**; só as linhas viram skeleton.
-- **Atualizações parciais:** evite refetchar listas inteiras quando só um item muda. Atualize apenas aquele item (via `queryClient.setQueryData`, `useMutation` com `onMutate`/optimistic update) em vez de rebuscar tudo. Mantém a UI responsiva e evita flicker.
-- **Skeleton granular:** coloque no lugar **exato** do dado, dentro do card real — não no card inteiro.
-- **Botão com loading:** spinner pequeno inline **dentro do botão** que disparou a ação, não spinner de tela.
-
-Regra adicional: skeletons em arquivos próprios, não inline no arquivo de tela. Co-localize com o componente que ele simula (ex. real no template: `src/screens/posts/postListSkeleton.tsx`) ou em uma pasta de componentes reutilizáveis. O skeleton deve reproduzir o layout real (mesmas margens, espaçamentos, ordem visual) para minimizar salto quando o conteúdo carregar.
-
-### Anti-padrões a evitar
-
-- ❌ `<View style={center}><ActivityIndicator size="large" /></View>` no lugar do conteúdo de uma tela inteira.
-- ❌ Envolver tela ou card inteiro num skeleton genérico de tela cheia.
-- ❌ Skeletonizar rótulos fixos ("Nome", "E-mail", "Status") — eles nunca mudam.
-- ❌ Modal/Drawer que abre e mostra spinner gigante até o form aparecer. Renderize o form com skeleton nos campos.
-
-### Exceções legítimas
-
-Indicador grande de tela cheia **só** quando ainda não existe shell pra mostrar — ex.: a tela de validação de sessão durante o boot, antes de qualquer rota protegida renderizar. O fallback de carregamento de rota do Expo Router deve ser **discreto** — uma barra fina ou nada visível, não spinner gigante.
+Botão com loading usa spinner inline; skeleton fica em arquivo próprio, no lugar exato do dado e reproduzindo o layout real; indicador de tela cheia só quando ainda não há shell, como na validação de sessão no boot — detalhe em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md).
 
 ---
 
 ## Estrutura de pastas
 
-```
-src/
-├── app/                 # Expo Router — rotas (arquivos finos que só orquestram)
-│   ├── _layout.tsx      # raiz: providers + gate de sessão (validate/SessionBoot) + Stack + Toaster
-│   ├── (auth)/          # grupo público — _layout (Stack), login, signup
-│   └── (app)/           # grupo protegido — _layout (redirect + tabs + ErrorBoundary), telas
-├── assets/              # imagens e estáticos
-├── components/          # componentes próprios (rn-primitives + Unistyles); form/ agrupa o kit
-├── hooks/               # hooks reutilizáveis
-├── lib/                 # utilidades puras (env, queryClient, toast)
-├── screens/             # implementação das telas; uma pasta por feature (auth/, showcase/…)
-├── services/            # acesso a dados — api/ (cliente) e <módulo>/ (chamadas + session)
-├── stores/              # stores Zustand de client state global (sessão…)
-└── types/               # tipos de domínio compartilhados
-unistyles.ts             # config do Unistyles (temas, breakpoints, settings)
-index.ts                 # entrypoint (importa expo-router/entry + unistyles)
-```
+Rotas finas em `src/app/` (grupos `(auth)` e `(app)`), telas em `src/screens/<feature>/`, componentes próprios em `src/components/`, acesso a dados em `src/services/`, stores Zustand em `src/stores/`; `unistyles.ts` e `index.ts` na raiz — detalhe em [`docs/claude/referencia.md`](docs/claude/referencia.md).
+
+---
+
+## Onde está o resto: índice por seção antiga
+
+As regras de área saíram deste arquivo para `docs/claude/`, sem reescrita. Citação antiga por nome de seção se resolve aqui; quando o título continua neste arquivo com a versão curta, o texto integral está no arquivo indicado.
+
+- [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md) — seções antigas: Inspirações de design e organização (texto integral do item 2; aqui ficam os itens 1 e 3 e a versão curta do 2); Antes de adicionar uma `<View>`, pergunte; Regras; Exemplo; Acentuação e codificação (evitar mojibake) (o título fica aqui, com a versão curta); Acessibilidade (a11y) (idem); Adaptação a tamanhos de tela e orientação (idem); Loading e estados intermediários (ficam aqui o parágrafo de abertura e a versão curta); Por quê; Padrões corretos; Anti-padrões a evitar; Exceções legítimas.
+- [`docs/claude/seguranca.md`](docs/claude/seguranca.md) — seções antigas: Object injection — nunca indexe objeto/array com variável; LGPD e dados pessoais (PII). Os bullets gerais de Segurança e as versões curtas das duas regras ficam aqui.
+- [`docs/claude/referencia.md`](docs/claude/referencia.md) — seções antigas: Estrutura de pastas (o título fica aqui, com a versão curta).
+- Ficam neste arquivo, inteiras: CLAUDE.md; Stack; Comportamento esperado; Estratégia de decisão (quando há múltiplas soluções); Guias de referência; Linguagem de código; TypeScript; Qualidade de código; Refatoração; Error handling; Performance; Git e commits; Dado derivado, rótulos e mensagens vêm do backend.
+- Ficam neste arquivo, em parte: Inspirações de design e organização (itens 1 e 3 e a versão curta do 2); JSX e markup (`View`/`Text`) — menos é mais (abertura e versão curta; as subseções foram para a área); Segurança (bullets gerais e versões curtas; as subseções foram para a área); Texto de interface (UI) (o corpo fica; a subseção Acentuação fica só com a versão curta); Acentuação, Acessibilidade (a11y), Adaptação, Loading e Estrutura de pastas (título e versão curta, como listado acima).
