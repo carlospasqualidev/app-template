@@ -1,6 +1,6 @@
 # Convenções do projeto
 
-Guia de referência movido do `CLAUDE.md`: leia antes de criar ou mexer em rota, tela, chamada de API, formulário, data, toast, componente, tipografia ou tema. As regras gerais (stack, TypeScript, JSX, segurança, acessibilidade, loading, git, estrutura) continuam no [`CLAUDE.md`](../CLAUDE.md).
+Guia de referência movido do `CLAUDE.md`: leia antes de criar ou mexer em rota, tela, chamada de API, formulário, data, toast, componente, tipografia ou tema. As regras gerais (stack, TypeScript, JSX, segurança, acessibilidade, loading, git, estrutura) continuam no [`CLAUDE.md`](../CLAUDE.md), em versão curta quando o detalhe foi para [`docs/claude/ui-telas.md`](claude/ui-telas.md) (JSX, acessibilidade, loading), [`docs/claude/seguranca.md`](claude/seguranca.md) (object injection, LGPD) ou [`docs/claude/referencia.md`](claude/referencia.md) (estrutura).
 
 ## Imports
 

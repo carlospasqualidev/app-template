@@ -66,7 +66,7 @@ unistyles.ts     # tema (cores, tipografia, breakpoints)
 - **Token de sessão em `expo-secure-store`** (nunca `AsyncStorage`).
 - **UI em pt-BR**, código em inglês. Suporte a **claro e escuro** é obrigatório em todo componente/tela.
 
-Detalhes completos (a11y, LGPD/PII, performance, object injection, etc.) no [`CLAUDE.md`](CLAUDE.md); rotas, HTTP, formulários, componentes e tema em [`docs/conventions.md`](docs/conventions.md); testes em [`docs/testing-guide.md`](docs/testing-guide.md).
+Regras gerais no [`CLAUDE.md`](CLAUDE.md), com a versão curta de a11y, LGPD/PII e object injection; o detalhe está em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md) (a11y) e [`docs/claude/seguranca.md`](docs/claude/seguranca.md) (LGPD/PII, object injection); rotas, HTTP, formulários, componentes e tema em [`docs/conventions.md`](docs/conventions.md); testes em [`docs/testing-guide.md`](docs/testing-guide.md).
 
 ## Builds (EAS)
 

@@ -2,21 +2,15 @@
 
 Guia para o Claude trabalhar neste app mobile. Este arquivo traz as regras gerais e o comportamento esperado, válidos para toda tarefa; as convenções por assunto, o Definition of Done e os guardrails ficam nos guias de `docs/` (ver Guias de referência).
 
-> Este é um **template de aplicativo** reutilizável entre projetos, partindo praticamente do zero. Não assuma uma biblioteca de componentes pronta: o que não existir ainda, você cria seguindo as regras abaixo e os Guias de referência. Mantenha tudo genérico e reaproveitável — nada de regra de negócio de um cliente específico vazando para a base do template.
-
-> Verificar: possivelmente desatualizado — o template já traz um kit de componentes em `src/components/` (`button`, `card`, `modal`, `form/` e outros; lista em `docs/conventions.md:387`), então “partindo praticamente do zero” e “não assuma uma biblioteca de componentes pronta” não batem com o código; ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 2.
+> Este é um **template de aplicativo** reutilizável entre projetos. Ele já traz um kit de componentes próprios em `src/components/` (lista em [`docs/conventions.md`](docs/conventions.md#componentes-components)): reuse o que existe; o que não existir ainda, você cria seguindo as regras abaixo e os Guias de referência. Mantenha tudo genérico e reaproveitável — nada de regra de negócio de um cliente específico vazando para a base do template.
 
 ---
 
 ## Stack
 
-React Native + Expo (SDK 56, New Architecture) + TypeScript • Expo Router (file-based) + TanStack Query • Zustand • React Hook Form + Zod • Unistyles + rn-primitives (componentes próprios) • Axios • toast (`sonner-native`) • Jest + React Native Testing Library + Maestro (E2E) • ESLint (`eslint-config-expo`) + Prettier + Husky + lint-staged.
+React Native + Expo (SDK 56, New Architecture) + TypeScript • Expo Router (file-based) + TanStack Query • Zustand • React Hook Form + Zod • Unistyles (componentes próprios; `@rn-primitives/checkbox` só no checkbox) • Axios • toast (`sonner-native`) • Jest + React Native Testing Library + Maestro (E2E) • ESLint (`eslint-config-expo`) + Prettier + Husky + lint-staged.
 
-> Verificar: possivelmente desatualizado — de rn-primitives só `@rn-primitives/checkbox` está instalado (`package.json:9`); o `Modal` é uma sheet sobre o `Modal` nativo, não rn-primitives (`docs/conventions.md:377`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 3.
-
-Estilo via **Unistyles** (`StyleSheet` nativo com tema/variantes), nunca `className`/Tailwind. Acessibilidade e comportamento dos componentes via **rn-primitives**. O app roda em **development build** (EAS ou `expo run:android`), **não** em Expo Go — Unistyles tem código nativo.
-
-> Verificar: possivelmente desatualizado — “acessibilidade e comportamento via rn-primitives” hoje vale só para o checkbox (`package.json:9`; `Modal` sem rn-primitives em `docs/conventions.md:377`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 3.
+Estilo via **Unistyles** (`StyleSheet` nativo com tema/variantes), nunca `className`/Tailwind. Acessibilidade e comportamento ficam nos próprios componentes (props `accessibility*` do RN); **rn-primitives** entra só no checkbox, e o `Modal` é uma sheet sobre o `Modal` nativo. O app roda em **development build** (EAS ou `expo run:android`), **não** em Expo Go — Unistyles tem código nativo.
 
 Autenticação por **token** guardado em `expo-secure-store` (nunca em `AsyncStorage`), enviado via header `Authorization`.
 
@@ -159,7 +153,7 @@ Uma `<View>` só fica se faz layout real (flex/spacing/posição) ou agrupa um n
 - Não logue dados sensíveis (senhas, tokens, dados pessoais) — nem em `console.log` durante desenvolvimento.
 - **Não armazene tokens/segredos em `AsyncStorage`** (não criptografado). Use `expo-secure-store` para token de sessão, refresh token e qualquer credencial. `AsyncStorage`/`MMKV` só para dado não-sensível (preferências, cache de UI).
 - **Object injection:** nunca indexe objeto/array com chave que não seja literal conhecido em tempo de compilação, nem silencie `security/detect-object-injection`; lookup por chave vai em `Map.get()` ou `switch`, iteração em `for...of`/`.map`/`.find`/`.at(i)`, e chave de input externo (params de rota, deep link, body) passa por `z.enum([...])` antes de qualquer acesso — detalhe em [`docs/claude/seguranca.md`](docs/claude/seguranca.md).
-- **LGPD e PII:** identificadores pessoais, contato, credenciais e sessão, dado financeiro e dado sensível nunca vão a log (console, Sentry/breadcrumb, analytics), params de rota/deep link, body de erro exibido nem toast; a rota leva ID opaco, o toast não ecoa o input, e `defaultValues`, mocks e fixtures usam dado fictício. Erro de API: a camada de rede já exibe a mensagem amigável, e o objeto de erro cru não é relogado no `console.error` de produção (em dev, OK, desde que o `.env.local` não vá pro repo) — detalhe em [`docs/claude/seguranca.md`](docs/claude/seguranca.md).
+- **LGPD e PII:** identificadores pessoais, contato, credenciais e sessão, dado financeiro e dado sensível nunca vão a log (console, Sentry/breadcrumb, analytics), params de rota/deep link, body de erro exibido nem toast; a rota leva ID opaco, o toast não ecoa o input, e `defaultValues`, mocks e fixtures usam dado fictício. Erro de API: a camada de rede já exibe a mensagem amigável, e o objeto de erro cru não é relogado no `console.error`, nem em dev; o `.env.local` não vai pro repo — detalhe em [`docs/claude/seguranca.md`](docs/claude/seguranca.md).
 
 ---
 

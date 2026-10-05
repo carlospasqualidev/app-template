@@ -10,20 +10,14 @@ src/
 │   ├── _layout.tsx      # raiz: providers + gate de sessão (validate/SessionBoot) + Stack + Toaster
 │   ├── (auth)/          # grupo público — _layout (Stack), login, signup
 │   └── (app)/           # grupo protegido — _layout (redirect + tabs + ErrorBoundary), telas
-├── assets/              # imagens e estáticos
-├── components/          # componentes próprios (rn-primitives + Unistyles); form/ agrupa o kit
+├── components/          # componentes próprios (Unistyles; rn-primitives só no checkbox); form/ agrupa o kit
 ├── hooks/               # hooks reutilizáveis
-├── lib/                 # utilidades puras (env, queryClient, toast)
+├── lib/                 # utilidades puras (env, queryClient, toast, getInitials)
 ├── screens/             # implementação das telas; uma pasta por feature (auth/, showcase/…)
 ├── services/            # acesso a dados — api/ (cliente) e <módulo>/ (chamadas + session)
 ├── stores/              # stores Zustand de client state global (sessão…)
 └── types/               # tipos de domínio compartilhados
+assets/                  # imagens e estáticos (alias @/assets/*), fora de src/
 unistyles.ts             # config do Unistyles (temas, breakpoints, settings)
 index.ts                 # entrypoint (importa expo-router/entry + unistyles)
 ```
-
-> Verificar: possivelmente desatualizado — a linha `├── assets/` da árvore acima põe os estáticos em `src/assets/`, que não existe; eles estão em `assets/` na raiz, com o alias `@/assets/*` -> `./assets/*` (`tsconfig.json:7`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 1.
-
-> Verificar: possivelmente desatualizado — a linha `├── components/` da árvore acima diz “(rn-primitives + Unistyles)”, mas só `@rn-primitives/checkbox` está instalado (`package.json:9`) e o `Modal` não usa rn-primitives (`docs/conventions.md:377`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 3.
-
-> Verificar: possivelmente desatualizado — a linha `├── lib/` da árvore acima lista “(env, queryClient, toast)”, mas `src/lib/` também tem `getInitials.ts` (usado pelo `Avatar`, `docs/conventions.md:387`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 4.

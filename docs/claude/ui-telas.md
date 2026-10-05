@@ -86,9 +86,7 @@ const styles = StyleSheet.create((theme) => ({
 
 ## Acessibilidade (a11y)
 
-rn-primitives dá a base de a11y — papéis, estados e gestos. As regressões comuns vêm de **remover/ignorar** o que ele entrega, ou de construir interativo com `View` crua. As regras abaixo são o mínimo para uma tela nova não degradar.
-
-> Verificar: possivelmente desatualizado — “rn-primitives dá a base de a11y” hoje vale só para o checkbox: só `@rn-primitives/checkbox` está instalado (`package.json:9`) e o `Modal` não usa rn-primitives (`docs/conventions.md:377`); ver `docs/mapa/enxugar-claude-md.md`, desatualizados, item 3.
+Os componentes próprios (`src/components/`) dão a base de a11y — papéis, estados e gestos. As regressões comuns vêm de **remover/ignorar** o que eles entregam, ou de construir interativo com `View` crua. As regras abaixo são o mínimo para uma tela nova não degradar.
 
 - **Toda input precisa de label associada** (`accessibilityLabel` ou label visível ligada ao campo). **Não use `placeholder` como label** — placeholder some quando o usuário começa a digitar e o leitor de tela não o trata como rótulo.
 - **Elemento interativo é `Pressable`/botão, nunca `View` com `onPress`.** `View` clicável não tem `accessibilityRole="button"`, não é anunciada como botão e não responde a tecnologias assistivas. Use `Pressable` com `accessibilityRole`.

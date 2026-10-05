@@ -24,7 +24,7 @@ PR**. Documentação divergente do código é pior que documentação inexistent
   de arquivo. Espelhe a estrutura das páginas existentes. Se houver nota de
   versão/changelog voltado ao usuário, registre lá a mudança visível (com módulo
   e impacto).
-- **Convenção que vai se repetir → registre no `CLAUDE.md` (regra geral) ou no guia de `docs/` do assunto.** Ao introduzir um
+- **Convenção que vai se repetir → registre onde manda a seção [Onde registrar convenção nova](../CLAUDE.md#onde-registrar-convenção-nova) do `CLAUDE.md`.** Ao introduzir um
   padrão novo (organização de pasta, componente compartilhado, regra de UX),
   documente-o lá para a próxima sessão (humana ou Claude) já chegar alinhada.
 - Só é dispensável quando a mudança **não afeta o uso** (refactor interno, teste,

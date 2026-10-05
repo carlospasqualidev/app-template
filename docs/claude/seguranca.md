@@ -64,7 +64,7 @@ Produto pt-BR opera sob a LGPD. Considere PII e **proibido logar** em qualquer c
 
 Regras práticas:
 
-- **Erros de API**: a camada de rede já exibe mensagem amigável — não relogue o objeto de erro cru no `console.error` de produção. Em dev, OK, desde que o `.env.local` não vá pro repo.
+- **Erros de API**: a camada de rede já exibe mensagem amigável — não relogue o objeto de erro cru no `console.error`, nem em dev (pode trazer PII). O `.env.local` não vai pro repo.
 - **Params de deep link/rota nunca levam PII** (aparecem em logs, histórico de navegação, analytics de tela). Use ID opaco na rota (`/users/abc123`), nunca CPF; dado sensível vai no body de uma chamada autenticada.
 - **Toast/erro ao usuário não ecoa o input**: `"Falha ao salvar."` em vez de `"Falha ao salvar o usuário ${nome} (CPF ${cpf})."`.
 - **Form com PII** (cadastro, perfil): garanta que `defaultValues` de exemplo não foram commitados com dado real.
