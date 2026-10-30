@@ -11,7 +11,7 @@ Quando rodar e como reportar: [`docs/definition-of-done.md`](../docs/definition-
    - macOS/Linux/WSL: `curl -fsSL "https://get.maestro.mobile.dev" | bash`
    - **Windows (sem WSL)**: baixe o `maestro.zip` do release (https://github.com/mobile-dev-inc/maestro/releases/latest), extraia em `C:\maestro` e adicione `C:\maestro\bin` ao PATH (`setx PATH "$env:PATH;C:\maestro\bin"`). Abra um novo terminal. Requer Java. (Windows nativo pode ser instável — o WSL é o caminho oficialmente suportado.)
 2. **Emulador Android** (ou device) com o **dev build** instalado e rodando:
-   `npx expo run:android` (uma vez), depois `npx expo start`.
+   `pnpm exec expo run:android` (uma vez), depois `pnpm exec expo start`.
 
 ## Rodar
 
@@ -21,7 +21,7 @@ maestro test .maestro/login.yaml
 maestro studio                  # inspecionar/gravar fluxos interativamente
 ```
 
-Ou via npm: `npm run test:e2e`.
+Ou via npm: `pnpm run test:e2e`.
 
 ## Fluxos
 

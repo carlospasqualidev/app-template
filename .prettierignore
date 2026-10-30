@@ -5,7 +5,8 @@ ios
 dist
 build
 coverage
-package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
 
 # Docs formatados à mão (tabelas, espaçamento).
 CLAUDE.md

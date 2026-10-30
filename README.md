@@ -18,10 +18,10 @@ O app roda em **development build** (não em Expo Go — Unistyles tem código n
 ## Começando
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env      # preencha EXPO_PUBLIC_API_URL
-npx expo run:android      # gera e instala o dev build (uma vez)
-npx expo start            # inicia o Metro
+pnpm exec expo run:android      # gera e instala o dev build (uma vez)
+pnpm exec expo start            # inicia o Metro
 ```
 
 A sessão vem em **modo fake** (aceita qualquer credencial) — veja como plugar o backend em `src/services/session/sessionService.ts`.
@@ -30,15 +30,15 @@ A sessão vem em **modo fake** (aceita qualquer credencial) — veja como plugar
 
 | Comando                | O que faz                                                 |
 | ---------------------- | --------------------------------------------------------- |
-| `npm run go`           | Inicia o Metro (`expo start`)                             |
-| `npm run dev`          | Gera e roda o dev build Android                           |
-| `npm run lint`         | ESLint                                                    |
-| `npm run typecheck`    | `tsc --noEmit`                                            |
-| `npm test`             | Jest                                                      |
-| `npm run test:related` | Jest só nos testes afetados pelas mudanças não commitadas |
-| `npm run check`        | lint + typecheck + test (rode antes de empurrar)          |
-| `npm run test:e2e`     | Maestro (precisa do CLI — ver `.maestro/README`)          |
-| `npm run format`       | Prettier                                                  |
+| `pnpm run go`           | Inicia o Metro (`expo start`)                             |
+| `pnpm run dev`          | Gera e roda o dev build Android                           |
+| `pnpm run lint`         | ESLint                                                    |
+| `pnpm run typecheck`    | `tsc --noEmit`                                            |
+| `pnpm test`             | Jest                                                      |
+| `pnpm run test:related` | Jest só nos testes afetados pelas mudanças não commitadas |
+| `pnpm run check`        | lint + typecheck + test (rode antes de empurrar)          |
+| `pnpm run test:e2e`     | Maestro (precisa do CLI — ver `.maestro/README`)          |
+| `pnpm run format`       | Prettier                                                  |
 
 O `pre-commit` roda ESLint + Prettier nos arquivos staged; o `pre-push` roda typecheck + test.
 
