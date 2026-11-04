@@ -13,3 +13,9 @@ Rodada 6, "testes mais rápidos" (2026-10-05). Pedido do dono: reduzir o tempo d
 | id | titulo | status (TODO/DOING/DONE/BLOCKED) | agente | resumo 1 linha |
 |---|---|---|---|---|
 | TPL-32 | App / Testes / Testes relacionados no loop por tarefa | DONE | reviewer | 3 revisões, 2 correções; test:related = jest --onlyChanged, padrão do loop no DoD (pega consumidores: text → 11 suítes, badge → 1); 0 testes ou "No tests found" não é verde (pós-commit --findRelatedTests, config/setup → npm test, só docs → 0/0 (só docs)); npm test ~18 s; check 53/53; commit 76a82e4 |
+
+Rodada 8, "ordem das ações" (2026-11-04). Pedido do dono: cancelar/negar à esquerda e confirmar/positivas à direita, como no frontend-template (TPL-41). Branch ordem-acoes, sem commit.
+
+| id | titulo | status (TODO/DOING/DONE/BLOCKED) | agente | resumo 1 linha |
+|---|---|---|---|---|
+| TPL-43 | App / Ações / Cancelar e negar à esquerda, confirmar e positivas à direita em todo o app + regra no CLAUDE.md | DONE | implementer | nada violava (ConfirmDialog já certo, sem Alert.alert); regra no CLAUDE.md e docs/conventions.md com limitação de plataforma; teste de ordem; jest 18 suites / 54 ok |

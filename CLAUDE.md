@@ -191,6 +191,7 @@ Todo texto exposto ao usuário em **português brasileiro (pt-BR)**.
   - Correto: `Falha ao salvar o registro. Tente novamente.`
   - Evite: `Unexpected persistence layer failure.`
 - **Nunca exponha referência interna ao usuário**: número de card/demanda, hash/código de merge, nome de branch, jargão de implementação. Não entra em label, placeholder, mensagem, toast nem em texto vindo do backend renderizado na tela. Se aparecer numa descrição/label (inclusive dado de mock/seed), é bug — corrija na origem.
+- **Ordem das ações:** negativa (Cancelar, Voltar, Continuar editando, Não) à esquerda e positiva (Salvar, Confirmar, Excluir, Descartar) à direita, inclusive destrutiva; empilhado, negativa em cima. Não reordene com `row-reverse`/`column-reverse`; no `Alert.alert`, negativa primeiro no array com `style: "cancel"`. Limitação: com 3 botões o SO empilha em coluna (iOS) ou impõe neutro/negativo/positivo (Android) — detalhe em [`docs/conventions.md#componentes-components`](docs/conventions.md#componentes-components).
 
 ### Dado derivado, rótulos e mensagens vêm do backend
 

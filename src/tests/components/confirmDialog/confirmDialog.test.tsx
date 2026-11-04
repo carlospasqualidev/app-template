@@ -3,6 +3,7 @@ import {
   screen,
   userEvent,
   waitFor,
+  within,
 } from "@testing-library/react-native";
 
 import { ConfirmDialog } from "@/components/confirmDialog";
@@ -38,6 +39,27 @@ describe("ConfirmDialog", () => {
     ).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "Excluir" })).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "Cancelar" })).toBeOnTheScreen();
+  });
+
+  it("mantém a ação negativa antes (à esquerda) da positiva, mesmo destrutiva", () => {
+    render(
+      <ConfirmDialog
+        visible
+        onClose={jest.fn()}
+        onConfirm={jest.fn()}
+        title="Excluir post"
+        confirmLabel="Excluir"
+        destructive
+      />,
+    );
+
+    const labels = screen
+      .getAllByRole("button")
+      .map((button) => within(button).queryByText(/^(Cancelar|Excluir)$/))
+      .filter(Boolean)
+      .map((text) => text?.props.children);
+
+    expect(labels).toEqual(["Cancelar", "Excluir"]);
   });
 
   it("chama onConfirm e fecha ao confirmar", async () => {

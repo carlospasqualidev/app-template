@@ -388,6 +388,8 @@ const [visible, setVisible] = useState(false);
 
 **Confirmações de ação** (delete, publicar, arquivar): use o **`ConfirmDialog`** (`@/components/confirmDialog`) — ele fica aberto enquanto o `onConfirm` resolve (botão com loading), fecha em sucesso e permanece aberto se a promise lançar (o erro propaga pra camada de rede, que já mostra o toast). Ref. de uso (com `useMutation` + optimistic update): [`src/screens/posts`](../src/screens/posts).
 
+**Ordem das ações (regra do dono).** Em qualquer grupo de ações, as de cancelar/negar/voltar/manter ("Cancelar", "Continuar editando", "Não", "Voltar", "Fechar") ficam sempre à esquerda e as positivas/de confirmação ("Salvar", "Confirmar", "Excluir", "Sair"), sempre à direita, mesmo quando destrutivas; empilhadas em coluna, a negativa fica em cima. Nada de `row-reverse`/`column-reverse`. No `Alert.alert`, ponha a negativa primeiro no array com `style: "cancel"`. Limitação do SO (conferida pela API, não em aparelho): com dois botões, `[negativa, positiva]` fica esquerda→direita nas duas plataformas (iOS põe o `cancel` à esquerda; no Android o 1º vira neutro e o 2º negativo, nessa ordem); com três ou mais, o iOS empilha em coluna na ordem do array e o Android fixa neutro/negativo/positivo pelas posições 1/2/3. Não há `Alert.alert` no template hoje.
+
 **Confirmação dupla para ações críticas** (bloquear usuário, apagar dado sensível, reverter cobrança): passe `requireText="APAGAR"` ao `ConfirmDialog` — ele exige digitar a palavra num campo que só habilita o botão final quando o texto bate. Use só em ações irreversíveis/alto impacto.
 
 ## Tipografia
