@@ -1,9 +1,9 @@
 appId: com.adalovelace.dev.apptemplate
 name: Excluir post (ConfirmDialog)
 ---
-# Exercita o ConfirmDialog no Feed. Não assere remoção permanente: o backend fake
-# (jsonplaceholder) não deleta de fato e o refetch restaura o item — aqui validamos
-# o contrato do diálogo (abre no toque, cancela e confirma fechando).
+# Exercita o ConfirmDialog no Feed. Não assere remoção permanente: os posts do modo
+# fake vivem em memória e voltam quando o app reinicia — aqui validamos o contrato
+# do diálogo (abre no toque, cancela e confirma fechando).
 - runFlow: login.yaml
 - tapOn: "Feed"
 - extendedWaitUntil:
