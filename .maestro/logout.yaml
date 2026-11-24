@@ -3,6 +3,14 @@ name: Logout
 ---
 - runFlow: login.yaml
 - tapOn: "Perfil"
+- scrollUntilVisible:
+    element: "Sair da conta"
+    direction: DOWN
+- tapOn: "Sair da conta"
+# Confirmação: "Sair" (match exato) mira só o botão do diálogo.
+- extendedWaitUntil:
+    visible: "Cancelar"
+    timeout: 10000
 - tapOn: "Sair"
 # Sem sessão, o gate redireciona de volta para o login.
 - assertVisible: "Entrar"
