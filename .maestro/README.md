@@ -21,7 +21,7 @@ maestro test .maestro/login.yaml
 maestro studio                  # inspecionar/gravar fluxos interativamente
 ```
 
-Ou via npm: `pnpm run test:e2e`.
+Ou pelo script: `pnpm run test:e2e`.
 
 ## Fluxos
 
