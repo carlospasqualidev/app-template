@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
-import { ScrollView, View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 import { BackButton } from "@/components/backButton";
 import { Text } from "@/components/text";
@@ -26,6 +27,7 @@ export function Screen({
   scrollable = true,
   showsVerticalScrollIndicator = false,
 }: IScreenProps) {
+  const { theme } = useUnistyles();
   const header = title ? (
     <View style={styles.header}>
       <View style={styles.titleRow}>
@@ -59,13 +61,16 @@ export function Screen({
   return (
     <View style={styles.container}>
       {scrollable ? (
-        <ScrollView
+        // Rola até o campo focado e o mantém acima do teclado (ver "Teclado e
+        // foco em campos" em docs/claude/ui-telas.md).
+        <KeyboardAwareScrollView
+          bottomOffset={theme.gap(3)}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         >
           {content}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       ) : (
         <View style={styles.staticContent}>{content}</View>
       )}

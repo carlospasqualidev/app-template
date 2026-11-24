@@ -215,6 +215,12 @@ Não esconda conteúdo por não caber: scroll ou reflow. Respeite a safe area, p
 
 ---
 
+## Teclado e foco em campos
+
+Ao tocar num campo que abre o teclado, a tela rola até ele e o mantém visível acima do teclado. Isso já vem do `Screen` e do `AuthLayout` (`KeyboardAwareScrollView` do `react-native-keyboard-controller`); scroller próprio com campo de texto usa o mesmo componente, nunca `ScrollView` puro nem `KeyboardAvoidingView` — detalhe em [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md).
+
+---
+
 ## Loading e estados intermediários
 
 **Não substitua a tela por um spinner gigante nem por um skeleton genérico.** Quando algo está carregando, monte a **estrutura final da tela primeiro** e troque **apenas o dado que muda** por skeleton. Cabeçalhos, rótulos, ações, abas, navegação — tudo que não muda entre vazio e preenchido continua **visível e interativo**.
@@ -233,8 +239,8 @@ Rotas finas em `src/app/` (grupos `(auth)` e `(app)`), telas em `src/screens/<fe
 
 As regras de área saíram deste arquivo para `docs/claude/`, sem reescrita. Citação antiga por nome de seção se resolve aqui; quando o título continua neste arquivo com a versão curta, o texto integral está no arquivo indicado.
 
-- [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md) — seções antigas: Inspirações de design e organização (texto integral do item 2; aqui ficam os itens 1 e 3 e a versão curta do 2); Antes de adicionar uma `<View>`, pergunte; Regras; Exemplo; Acentuação e codificação (evitar mojibake) (o título fica aqui, com a versão curta); Acessibilidade (a11y) (idem); Adaptação a tamanhos de tela e orientação (idem); Loading e estados intermediários (ficam aqui o parágrafo de abertura e a versão curta); Por quê; Padrões corretos; Anti-padrões a evitar; Exceções legítimas.
+- [`docs/claude/ui-telas.md`](docs/claude/ui-telas.md) — seções antigas: Inspirações de design e organização (texto integral do item 2; aqui ficam os itens 1 e 3 e a versão curta do 2); Antes de adicionar uma `<View>`, pergunte; Regras; Exemplo; Acentuação e codificação (evitar mojibake) (o título fica aqui, com a versão curta); Acessibilidade (a11y) (idem); Adaptação a tamanhos de tela e orientação (idem); Teclado e foco em campos (idem); Loading e estados intermediários (ficam aqui o parágrafo de abertura e a versão curta); Por quê; Padrões corretos; Anti-padrões a evitar; Exceções legítimas.
 - [`docs/claude/seguranca.md`](docs/claude/seguranca.md) — seções antigas: Object injection — nunca indexe objeto/array com variável; LGPD e dados pessoais (PII). Os bullets gerais de Segurança e as versões curtas das duas regras ficam aqui.
 - [`docs/claude/referencia.md`](docs/claude/referencia.md) — seções antigas: Estrutura de pastas (o título fica aqui, com a versão curta).
 - Ficam neste arquivo, inteiras: CLAUDE.md; Stack; Comportamento esperado; Estratégia de decisão (quando há múltiplas soluções); Guias de referência; Linguagem de código; TypeScript; Qualidade de código; Refatoração; Error handling; Performance; Git e commits; Dado derivado, rótulos e mensagens vêm do backend.
-- Ficam neste arquivo, em parte: Inspirações de design e organização (itens 1 e 3 e a versão curta do 2); JSX e markup (`View`/`Text`) — menos é mais (abertura e versão curta; as subseções foram para a área); Segurança (bullets gerais e versões curtas; as subseções foram para a área); Texto de interface (UI) (o corpo fica; a subseção Acentuação fica só com a versão curta); Acentuação, Acessibilidade (a11y), Adaptação, Loading e Estrutura de pastas (título e versão curta, como listado acima).
+- Ficam neste arquivo, em parte: Inspirações de design e organização (itens 1 e 3 e a versão curta do 2); JSX e markup (`View`/`Text`) — menos é mais (abertura e versão curta; as subseções foram para a área); Segurança (bullets gerais e versões curtas; as subseções foram para a área); Texto de interface (UI) (o corpo fica; a subseção Acentuação fica só com a versão curta); Acentuação, Acessibilidade (a11y), Adaptação, Teclado e foco em campos, Loading e Estrutura de pastas (título e versão curta, como listado acima).

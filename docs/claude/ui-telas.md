@@ -105,9 +105,20 @@ Os componentes próprios (`src/components/`) dão a base de a11y — papéis, es
 **Não esconda conteúdo por não caber.** Quando algo não cabe na largura, a solução é **scroll** (vertical na tela, horizontal num container específico) ou **reflow** — não suprimir informação.
 
 - **Respeite a safe area** (`react-native-safe-area-context`) para não ficar sob notch, status bar ou home indicator. Não chumbe `paddingTop` mágico.
-- **Conteúdo que pode estourar a altura vai em `ScrollView`/`FlashList`.** Formulário longo precisa rolar e respeitar o teclado (`KeyboardAvoidingView` / `keyboardShouldPersistTaps`).
+- **Conteúdo que pode estourar a altura vai em `ScrollView`/`FlashList`.** Formulário longo precisa rolar e respeitar o teclado (ver **Teclado e foco em campos**, abaixo).
 - **Conteúdo largo**: container com `ScrollView horizontal` em vez de cortar partes.
 - **Tablet e landscape**: use os **breakpoints do Unistyles** (`xs:0, sm, md, lg, xl`) para adaptar layout, não condicional manual com `Dimensions`.
+
+## Teclado e foco em campos
+
+**Ao tocar num campo que abre o teclado (texto, senha, data digitada, área de texto), a tela rola até ele e o deixa visível acima do teclado**, com folga, como nos apps de referência. O teclado nunca cobre o campo em edição nem o erro de validação logo abaixo dele.
+
+- **Quem resolve é o scroller, não a tela.** O `Screen` (com `scrollable`, o padrão) e o `AuthLayout` usam o `KeyboardAwareScrollView` do `react-native-keyboard-controller` (provider `KeyboardProvider` no layout raiz), com `bottomOffset={theme.gap(3)}`. Campo dentro deles já ganha o comportamento: não faça `scrollTo` à mão nem meça o input na tela.
+- **Scroller próprio com campo de texto** (tela com `scrollable={false}` que tem formulário, lista com campo editável): use o `KeyboardAwareScrollView` da mesma biblioteca, com o mesmo `bottomOffset`, em vez de `ScrollView`, e mantenha `keyboardShouldPersistTaps="handled"` para o toque num botão não só fechar o teclado.
+- **Não use `KeyboardAvoidingView`** em tela nova: no Android com edge-to-edge ele não acompanha o teclado de forma confiável e não rola até o campo.
+- **Exceção: o `Modal` (bottom sheet)** já sobe acima do teclado e encolhe para o espaço visível (`useKeyboardHeight`); o corpo dele rola normalmente.
+- **Campo novo em `@/components/form`** que usa `TextInput` herda o comportamento sem código extra, desde que encaminhe o `ref` e os eventos de foco do `TextInput` (não os engula num wrapper).
+- A biblioteca tem código nativo: depois de instalá-la ou atualizá-la, refaça o dev build (`pnpm exec expo run:android`).
 
 ## Loading e estados intermediários
 

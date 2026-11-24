@@ -33,6 +33,12 @@ jest.mock("react-native-reanimated", () => {
   };
 });
 
+// Keyboard controller tem módulo nativo; o mock oficial troca o KeyboardAwareScrollView
+// por ScrollView e o KeyboardProvider por passthrough.
+jest.mock("react-native-keyboard-controller", () =>
+  require("react-native-keyboard-controller/jest"),
+);
+
 // Safe area precisa de provider em runtime; no Jest, mock manual mínimo (insets
 // zerados, SafeAreaView/Provider como passthrough). Cobre o que o app usa.
 jest.mock("react-native-safe-area-context", () => {

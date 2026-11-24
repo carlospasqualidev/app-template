@@ -1,7 +1,8 @@
 import { type ReactNode } from "react";
-import { KeyboardAvoidingView, ScrollView, View } from "react-native";
+import { View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet, useUnistyles } from "react-native-unistyles";
 
 import { BrandLogo } from "@/components/brandLogo";
 import { Card } from "@/components/card";
@@ -19,32 +20,33 @@ interface IAuthLayoutProps {
  * não repetir a estrutura. A identidade vem da marca e da paleta.
  */
 export function AuthLayout({ title, subtitle, children }: IAuthLayoutProps) {
+  const { theme } = useUnistyles();
+
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView behavior="padding" style={styles.safe}>
-        <ScrollView
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <BrandLogo />
-          {title || subtitle ? (
-            <View style={styles.header}>
-              {title ? (
-                <Text variant="h2" align="center">
-                  {title}
-                </Text>
-              ) : null}
-              {subtitle ? (
-                <Text variant="p2" color="muted" align="center">
-                  {subtitle}
-                </Text>
-              ) : null}
-            </View>
-          ) : null}
-          <Card style={styles.panel}>{children}</Card>
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <KeyboardAwareScrollView
+        bottomOffset={theme.gap(3)}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <BrandLogo />
+        {title || subtitle ? (
+          <View style={styles.header}>
+            {title ? (
+              <Text variant="h2" align="center">
+                {title}
+              </Text>
+            ) : null}
+            {subtitle ? (
+              <Text variant="p2" color="muted" align="center">
+                {subtitle}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
+        <Card style={styles.panel}>{children}</Card>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

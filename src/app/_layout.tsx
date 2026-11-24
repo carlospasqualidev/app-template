@@ -2,6 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SystemBars } from "react-native-edge-to-edge";
 import { useUnistyles } from "react-native-unistyles";
@@ -32,29 +33,31 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          {/* Ícones das DUAS barras (status + navegação) acompanham o tema do SO:
+      <KeyboardProvider>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaProvider>
+            {/* Ícones das DUAS barras (status + navegação) acompanham o tema do SO:
               escuros no claro, claros no escuro. Sem isto, no edge-to-edge a barra de
               navegação fica com botões claros (invisíveis) sobre o fundo claro. */}
-          <SystemBars style={rt.colorScheme === "dark" ? "light" : "dark"} />
-          {isValidatingSession ? (
-            <SessionBoot />
-          ) : (
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                // Fundo da cena = fundo do tema; sem isso, a transição de slide mostra o
-                // branco padrão do navegador por um frame antes de a tela pintar (flash no
-                // tema escuro).
-                contentStyle: { backgroundColor: theme.colors.background },
-              }}
-            />
-          )}
-          <SystemBarsBackground />
-          <Toaster position="top-center" theme="system" richColors />
-        </SafeAreaProvider>
-      </QueryClientProvider>
+            <SystemBars style={rt.colorScheme === "dark" ? "light" : "dark"} />
+            {isValidatingSession ? (
+              <SessionBoot />
+            ) : (
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  // Fundo da cena = fundo do tema; sem isso, a transição de slide mostra o
+                  // branco padrão do navegador por um frame antes de a tela pintar (flash no
+                  // tema escuro).
+                  contentStyle: { backgroundColor: theme.colors.background },
+                }}
+              />
+            )}
+            <SystemBarsBackground />
+            <Toaster position="top-center" theme="system" richColors />
+          </SafeAreaProvider>
+        </QueryClientProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }
