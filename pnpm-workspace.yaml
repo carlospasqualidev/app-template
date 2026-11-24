@@ -1,2 +1,7 @@
+# node_modules plano, como no npm. O layout isolado do pnpm (node_modules/.pnpm/<pacote>@<hash>/...)
+# estoura o limite de caminho do Windows no build C++ das libs nativas (CMake/ninja:
+# "build.ninja still dirty after 100 tries"), e o React Native espera as dependências no topo.
+nodeLinker: hoisted
+
 allowBuilds:
   unrs-resolver: true
